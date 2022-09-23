@@ -44,3 +44,8 @@ resource "aws_iam_role" "rileysnyderharnessio-assumed" {
   name               = "rileysnyderharnessio-assumed"
   assume_role_policy = data.aws_iam_policy_document.rileysnyderharnessio-assumed.json
 }
+
+resource "aws_iam_role_policy_attachment" "rileysnyderharnessio-assumed-AdministratorAccess" {
+  role       = aws_iam_role.rileysnyderharnessio-assumed.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
