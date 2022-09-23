@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "rileysnyderharnessio-assumed" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Role"
+      type = "AWS"
       identifiers = [
         aws_iam_user.rileysnyderharnessio.arn,
         aws_iam_user.rileysnyderharnessio-connector.arn,
