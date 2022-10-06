@@ -29,7 +29,9 @@ resource "harness_platform_connector_github" "Github" {
   name            = "Github"
   url             = "https://github.com"
   connection_type = "Account"
-  validation_repo = "test"
+  validation_repo = "rssnyder/test"
+
+  delegate_selectors = ["riley-sa-gcp"]
 
   api_authentication {
     token_ref = "account.gh_pat"
