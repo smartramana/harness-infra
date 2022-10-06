@@ -4,6 +4,9 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.0"
     }
+    harness = {
+      source = "harness/harness"
+    }
   }
 }
 
