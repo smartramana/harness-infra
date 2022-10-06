@@ -1,0 +1,17 @@
+pipeline:
+  identifier: harnessinfra
+  stages:
+    - stage:
+        identifier: apply
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  identifier: assume
+                  type: ShellScript
+                  spec:
+                    environmentVariables:
+                      - name: ROLE_ARN
+                        type: String
+                        value: arn:aws:iam::759984737373:role/rileysnyderharnessio-assumed

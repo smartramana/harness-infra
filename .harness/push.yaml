@@ -1,0 +1,26 @@
+trigger:
+  name: push to main
+  identifier: push_to_main
+  enabled: true
+  orgIdentifier: default
+  projectIdentifier: development
+  pipelineIdentifier: tf
+  source:
+    type: Webhook
+    spec:
+      type: Github
+      spec:
+        type: Push
+        spec:
+          connectorRef: account.Github
+          autoAbortPreviousExecutions: true
+          payloadConditions:
+            - key: changedFiles
+              operator: StartsWith
+              value: terraform/
+            - key: targetBranch
+              operator: Equals
+              value: main
+          repoName: rssnyder/harness-infra
+  inputYaml: |
+    pipeline: {}
