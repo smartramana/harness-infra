@@ -23,3 +23,17 @@ resource "harness_platform_usergroup" "approvers" {
     group_email = "riley.snyder@harness.io"
   }
 }
+
+resource "harness_platform_connector_github" "Github" {
+  identifier      = "Github"
+  name            = "Github"
+  url             = "https://github.com"
+  connection_type = "Account"
+  validation_repo = "test"
+  credentials {
+    http {
+      username  = "rssnyder"
+      token_ref = "account.gh_pat"
+    }
+  }
+}
