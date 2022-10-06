@@ -30,6 +30,11 @@ resource "harness_platform_connector_github" "Github" {
   url             = "https://github.com"
   connection_type = "Account"
   validation_repo = "test"
+
+  api_authentication {
+    token_ref = "account.gh_pat"
+  }
+
   credentials {
     http {
       username  = "rssnyder"
