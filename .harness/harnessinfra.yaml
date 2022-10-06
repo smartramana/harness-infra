@@ -88,7 +88,7 @@ pipeline:
                           value: <+execution.steps.assume.output.outputVariables.AWS_SECRET_ACCESS_KEY>
                           type: String
                         - name: HARNESS_PLATFORM_API_KEY
-                          value: <+secrets.getValue("HARNESS_PLATFORM_API_KEY")>
+                          value: <+secrets.getValue("account.harness_api_token")>
                           type: String
                         - name: HARNESS_ACCOUNT_ID
                           value: wlgELJ0TTre5aZhzpt8gVA
