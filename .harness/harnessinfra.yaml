@@ -56,8 +56,6 @@ pipeline:
                       - name: AWS_SESSION_TOKEN
                         type: Secret
                         value: AWS_SESSION_TOKEN
-                    delegateSelectors:
-                      - riley-sa-cluser-development
                   timeout: 10m
                   failureStrategies: []
               - step:
@@ -97,8 +95,6 @@ pipeline:
                           value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
                           type: String
                     provisionerIdentifier: something
-                    delegateSelectors:
-                      - riley-sa-cluser-development
                   timeout: 10m
                   failureStrategies: []
               - step:
@@ -123,8 +119,6 @@ pipeline:
                     configuration:
                       type: InheritFromPlan
                     provisionerIdentifier: something
-                    delegateSelectors:
-                      - riley-sa-cluser-development
                   timeout: 10m
                   failureStrategies: []
         tags: {}
