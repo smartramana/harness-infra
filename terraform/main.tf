@@ -22,7 +22,7 @@ resource "aws_s3_bucket_public_access_block" "riley-snyder-harness-io" {
 }
 
 module "ccm" {
-  source              = "github.com/rssnyder/terraform-aws-harness-ccm.git"
+  source              = "git::https://github.com/rssnyder/terraform-aws-harness-ccm.git?ref=fix/report-fail-bucket"
   external_id         = "harness:891928451355:wlgELJ0TTre5aZhzpt8gVA"
   enable_events       = true
   enable_optimization = true
