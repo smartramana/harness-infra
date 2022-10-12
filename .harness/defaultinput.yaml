@@ -1,6 +1,7 @@
 inputSet:
   identifier: "defaultinput"
   name: "default-input"
+  tags: {}
   orgIdentifier: "default"
   projectIdentifier: "development"
   pipeline:
@@ -19,7 +20,7 @@ inputSet:
                     type: "ShellScript"
                     spec:
                       environmentVariables:
-                      - name: "ROLE_ARN"
+                      - name: "TARGET_ROLE_ARN"
                         type: "String"
                         value: "arn:aws:iam::759984737373:role/rileysnyderharnessio-assumed"
                       - name: "AWS_ACCESS_KEY_ID"
