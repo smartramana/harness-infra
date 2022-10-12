@@ -49,3 +49,26 @@ resource "aws_iam_role_policy_attachment" "rileysnyderharnessio-assumed-Administ
   role       = aws_iam_role.rileysnyderharnessio-assumed.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
+data "aws_iam_policy_document" "rileysnyderharnessio-assumed-again" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type = "AWS"
+      identifiers = [
+        aws_iam_role.rileysnyderharnessio-assumed.arn
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "rileysnyderharnessio-assumed-again" {
+  name               = "rileysnyderharnessio-assumed-again"
+  assume_role_policy = data.aws_iam_policy_document.rileysnyderharnessio-assumed-again.json
+}
+
+resource "aws_iam_role_policy_attachment" "rileysnyderharnessio-assumed-again-AdministratorAccess" {
+  role       = aws_iam_role.rileysnyderharnessio-assumed-again.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
