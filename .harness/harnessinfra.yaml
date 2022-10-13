@@ -97,3 +97,5 @@ pipeline:
                   failureStrategies: []
         tags: {}
   storeType: INLINE
+  delegateSelectors:
+    - sa-cluster
