@@ -22,9 +22,10 @@ resource "aws_s3_bucket_public_access_block" "riley-snyder-harness-io" {
 }
 
 module "ccm" {
-  source              = "git::https://github.com/rssnyder/terraform-aws-harness-ccm.git?ref=main"
-  external_id         = "harness:891928451355:wlgELJ0TTre5aZhzpt8gVA"
-  enable_events       = true
-  enable_optimization = true
-  prefix              = "riley-"
+  source                  = "git::https://github.com/rssnyder/terraform-aws-harness-ccm.git?ref=feat/additional_external_ids"
+  external_id             = "harness:891928451355:wlgELJ0TTre5aZhzpt8gVA"
+  additional_external_ids = ["harness:891928451355:V2iSB2gRR_SxBs0Ov5vqCQ"]
+  enable_events           = true
+  enable_optimization     = true
+  prefix                  = "riley-"
 }
