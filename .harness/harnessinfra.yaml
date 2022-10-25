@@ -33,6 +33,22 @@ pipeline:
                             type: String
                             value: <+input>
               - step:
+                  type: ShellScript
+                  name: github keys
+                  identifier: github_keys
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: |-
+                          mkdir -p ~/.ssh
+                          ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+                    environmentVariables: []
+                    outputVariables: []
+                  timeout: 10m
+              - step:
                   type: TerraformPlan
                   name: plan
                   identifier: pla
