@@ -48,6 +48,8 @@ pipeline:
                             repoName: rssnyder/harness-infra
                             branch: main
                             folderPath: terraform/
+                        moduleSource:
+                          useConnectorCredentials: true
                       secretManagerRef: harnessSecretManager
                       environmentVariables:
                         - name: AWS_REGION
