@@ -87,9 +87,6 @@ pipeline:
                         - name: AWS_SESSION_TOKEN
                           value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
                           type: String
-                        - name: TF_LOG
-                          value: DEBUG
-                          type: String
                     provisionerIdentifier: something
                   timeout: 10m
                   failureStrategies: []
