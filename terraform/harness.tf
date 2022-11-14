@@ -77,3 +77,95 @@ resource "harness_platform_connector_prometheus" "saprom" {
   url                = "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090/"
   delegate_selectors = ["riley-sa-gcp"]
 }
+
+resource "harness_platform_environment" "dev" {
+  identifier = "dev"
+  name       = "dev"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = harness_platform_project.development.id
+  type       = "PreProduction"
+  yaml       = <<EOF
+environment:
+  name: dev
+  identifier: dev
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: default
+  projectIdentifier: development
+  variables: []
+EOF
+}
+
+resource "harness_platform_infrastructure" "dev_sa" {
+  identifier      = "sa"
+  name            = "sa"
+  org_id          = data.harness_platform_organization.default.id
+  project_id      = harness_platform_project.development.id
+  env_id          = harness_platform_environment.dev.id
+  type            = "KubernetesDirect"
+  deployment_type = "Kubernetes"
+  yaml            = <<EOF
+infrastructureDefinition:
+  name: sa
+  identifier: sa
+  description: ""
+  tags: {}
+  orgIdentifier: default
+  projectIdentifier: development
+  environmentRef: dev
+  deploymentType: Kubernetes
+  type: KubernetesDirect
+  spec:
+    connectorRef: account.sagcp
+    namespace: riley-dev-<+service.name>
+    releaseName: release-<+INFRA_KEY>
+  allowSimultaneousDeployments: false
+EOF
+}
+
+resource "harness_platform_environment" "stage" {
+  identifier = "stage"
+  name       = "stage"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = harness_platform_project.development.id
+  type       = "PreProduction"
+  yaml       = <<EOF
+environment:
+  name: stage
+  identifier: stage
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: default
+  projectIdentifier: development
+  variables: []
+EOF
+}
+
+resource "harness_platform_infrastructure" "stage_sa" {
+  identifier      = "sa"
+  name            = "sa"
+  org_id          = data.harness_platform_organization.default.id
+  project_id      = harness_platform_project.development.id
+  env_id          = harness_platform_environment.stage.id
+  type            = "KubernetesDirect"
+  deployment_type = "Kubernetes"
+  yaml            = <<EOF
+infrastructureDefinition:
+  name: sa
+  identifier: sa
+  description: ""
+  tags: {}
+  orgIdentifier: default
+  projectIdentifier: development
+  environmentRef: stage
+  deploymentType: Kubernetes
+  type: KubernetesDirect
+  spec:
+    connectorRef: account.sagcp
+    namespace: riley-stage-<+service.name>
+    releaseName: release-<+INFRA_KEY>
+  allowSimultaneousDeployments: false
+EOF
+}
