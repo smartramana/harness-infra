@@ -27,7 +27,7 @@ resource "harness_platform_usergroup" "approvers" {
 resource "harness_platform_connector_github" "Github" {
   identifier      = "Github"
   name            = "Github"
-  url             = "https://github.com"
+  url             = "https://github.com/rssnyder"
   connection_type = "Account"
   validation_repo = "rssnyder/test"
 
