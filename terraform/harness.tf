@@ -47,7 +47,7 @@ resource "harness_platform_connector_docker" "dockerhub" {
   identifier = "dockerhub"
   name       = "dockerhub"
   type       = "DockerHub"
-  url        = "https://registry.hub.docker.com/v2/"
+  url        = "https://index.docker.io/v2/"
 
   credentials {
     username     = "rileysnyderharnessio"

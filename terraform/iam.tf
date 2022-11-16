@@ -35,6 +35,7 @@ data "aws_iam_policy_document" "rileysnyderharnessio-assumed" {
       identifiers = [
         aws_iam_user.rileysnyderharnessio.arn,
         aws_iam_user.rileysnyderharnessio-connector.arn,
+        "arn:aws:iam::759984737373:role/riley-ecsTaskRole"
       ]
     }
   }

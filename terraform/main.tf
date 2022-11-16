@@ -29,37 +29,3 @@ module "ccm" {
   enable_optimization     = true
   prefix                  = "riley-"
 }
-
-module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
-
-  name = "sa-lab"
-  cidr = "10.0.0.0/16"
-
-  azs             = ["us-west-2a", "us-west-2b"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
-  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24"]
-
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
-
-  # enable_flow_log                      = true
-  # create_flow_log_cloudwatch_iam_role  = true
-  # create_flow_log_cloudwatch_log_group = true
-
-  public_subnet_tags = {
-    "type"                         = "public"
-    "vpc"                          = "sa-lab"
-    "kubernetes.io/cluster/sa-lab" = "shared"
-    "kubernetes.io/role/elb"       = 1
-  }
-
-  private_subnet_tags = {
-    "type"                            = "private"
-    "vpc"                             = "sa-lab"
-    "kubernetes.io/cluster/sa-lab"    = "shared"
-    "kubernetes.io/role/internal-elb" = 1
-  }
-}
