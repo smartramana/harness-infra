@@ -1,0 +1,103 @@
+pipeline:
+  name: harness as code
+  identifier: harness_as_code
+  projectIdentifier: Default_Project_1662659562703
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: apply
+        identifier: apply
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  name: assume
+                  identifier: assume
+                  template:
+                    templateRef: account.aws_assume_role_w_key
+                    versionLabel: "1"
+                    templateInputs:
+                      type: ShellScript
+                      spec:
+                        environmentVariables:
+                          - name: AWS_ACCESS_KEY_ID
+                            type: String
+                            value: <+input>
+                          - name: AWS_SECRET_ACCESS_KEY
+                            type: String
+                            value: <+input>
+                          - name: TARGET_ROLE_ARN
+                            type: String
+                            value: <+input>
+              - step:
+                  type: TerraformPlan
+                  name: plan
+                  identifier: pla
+                  spec:
+                    configuration:
+                      command: Apply
+                      configFiles:
+                        store:
+                          type: Github
+                          spec:
+                            gitFetchType: Branch
+                            connectorRef: account.Github
+                            repoName: rssnyder/harness-infra
+                            branch: main
+                            folderPath: terraform/
+                        moduleSource:
+                          useConnectorCredentials: true
+                      secretManagerRef: harnessSecretManager
+                      environmentVariables:
+                        - name: AWS_REGION
+                          value: us-west-2
+                          type: String
+                        - name: AWS_ACCESS_KEY_ID
+                          value: <+execution.steps.assume.output.outputVariables.AWS_ACCESS_KEY_ID>
+                          type: String
+                        - name: AWS_SECRET_ACCESS_KEY
+                          value: <+execution.steps.assume.output.outputVariables.AWS_SECRET_ACCESS_KEY>
+                          type: String
+                        - name: HARNESS_PLATFORM_API_KEY
+                          value: <+secrets.getValue("account.harness_api_token")>
+                          type: String
+                        - name: HARNESS_ACCOUNT_ID
+                          value: wlgELJ0TTre5aZhzpt8gVA
+                          type: String
+                        - name: AWS_SESSION_TOKEN
+                          value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
+                          type: String
+                    provisionerIdentifier: harnessascode
+                  timeout: 10m
+                  failureStrategies: []
+              - step:
+                  type: HarnessApproval
+                  name: approve
+                  identifier: approve
+                  spec:
+                    approvalMessage: Please review the plan step output and approve based on the changes specified.
+                    includePipelineExecutionHistory: true
+                    approvers:
+                      userGroups:
+                        - _project_all_users
+                      minimumCount: 1
+                      disallowPipelineExecutor: false
+                    approverInputs: []
+                  timeout: 1d
+              - step:
+                  type: TerraformApply
+                  name: apply
+                  identifier: apply
+                  spec:
+                    configuration:
+                      type: InheritFromPlan
+                    provisionerIdentifier: harnessascode
+                  timeout: 10m
+                  failureStrategies: []
+        tags: {}
+  storeType: INLINE
+  delegateSelectors:
+    - sa-cluster
