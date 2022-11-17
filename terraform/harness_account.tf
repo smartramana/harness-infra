@@ -1,7 +1,7 @@
 resource "harness_platform_connector_github" "Github" {
   identifier      = "Github"
   name            = "Github"
-  url             = "https://github.com/rssnyder"
+  url             = "https://github.com"
   connection_type = "Account"
   validation_repo = "rssnyder/test"
 
