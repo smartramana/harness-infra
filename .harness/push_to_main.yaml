@@ -3,8 +3,8 @@ trigger:
   identifier: push_to_main
   enabled: true
   orgIdentifier: default
-  projectIdentifier: development
-  pipelineIdentifier: tf
+  projectIdentifier: Default_Project_1662659562703
+  pipelineIdentifier: harness_as_code
   source:
     type: Webhook
     spec:
@@ -12,7 +12,7 @@ trigger:
       spec:
         type: Push
         spec:
-          connectorRef: account.Github
+          connectorRef: account.rssnyder
           autoAbortPreviousExecutions: true
           payloadConditions:
             - key: changedFiles
@@ -21,6 +21,7 @@ trigger:
             - key: targetBranch
               operator: Equals
               value: main
-          repoName: rssnyder/harness-infra
-  inputYaml: |
-    pipeline: {}
+          repoName: harness-infra
+  pipelineBranchName: <+trigger.branch>
+  inputSetRefs:
+    - default
