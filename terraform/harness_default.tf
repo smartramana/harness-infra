@@ -49,3 +49,52 @@ infrastructureDefinition:
   allowSimultaneousDeployments: false
 EOF
 }
+
+resource "harness_platform_service" "delegate" {
+  identifier = "delegate"
+  name       = "delegate"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = data.harness_platform_project.default.id
+  yaml       = <<EOF
+service:
+  name: delegate
+  identifier: delegate
+  tags: {}
+  serviceDefinition:
+    spec:
+      manifests:
+        - manifest:
+            identifier: delegate
+            type: K8sManifest
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: account.rssnyder
+                  gitFetchType: Branch
+                  paths:
+                    - delegate.yaml
+                  repoName: template
+                  branch: main
+              valuesPaths:
+                - delegate_values.yaml
+                - namespace.yaml
+              skipResourceVersioning: false
+      artifacts:
+        primary:
+          primaryArtifactRef: <+input>
+          sources:
+            - spec:
+                connectorRef: account.dockerhub
+                imagePath: rileysnyderharnessio/delegate-immutable
+                tag: dev
+              identifier: delegate
+              type: DockerRegistry
+      variables:
+        - name: namespace
+          type: String
+          description: ""
+          value: riley-dev-delegate
+    type: Kubernetes
+EOF
+}
