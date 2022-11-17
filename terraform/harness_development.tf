@@ -56,7 +56,7 @@ resource "harness_platform_infrastructure" "development_dev_sa" {
   name            = "sa"
   org_id          = data.harness_platform_organization.default.id
   project_id      = harness_platform_project.development.id
-  env_id          = harness_platform_environment.dev.id
+  env_id          = harness_platform_environment.development_dev.id
   type            = "KubernetesDirect"
   deployment_type = "Kubernetes"
   yaml            = <<EOF
@@ -102,7 +102,7 @@ resource "harness_platform_infrastructure" "development_stage_sa" {
   name            = "sa"
   org_id          = data.harness_platform_organization.default.id
   project_id      = harness_platform_project.development.id
-  env_id          = harness_platform_environment.stage.id
+  env_id          = harness_platform_environment.development_stage.id
   type            = "KubernetesDirect"
   deployment_type = "Kubernetes"
   yaml            = <<EOF

@@ -8,7 +8,7 @@ resource "harness_platform_environment" "dev" {
   identifier = "dev"
   name       = "dev"
   org_id     = data.harness_platform_organization.default.id
-  project_id = harness_platform_project.default.id
+  project_id = data.harness_platform_project.default.id
   type       = "PreProduction"
   yaml       = <<EOF
 environment:
@@ -27,7 +27,7 @@ resource "harness_platform_infrastructure" "dev_sa" {
   identifier      = "sa"
   name            = "sa"
   org_id          = data.harness_platform_organization.default.id
-  project_id      = harness_platform_project.default.id
+  project_id      = data.harness_platform_project.default.id
   env_id          = harness_platform_environment.dev.id
   type            = "KubernetesDirect"
   deployment_type = "Kubernetes"
