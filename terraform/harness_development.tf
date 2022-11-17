@@ -1,8 +1,3 @@
-data "harness_platform_organization" "default" {
-  identifier = "default"
-  name       = "default"
-}
-
 resource "harness_platform_project" "development" {
   identifier = "development"
   name       = "development"
@@ -37,7 +32,7 @@ resource "harness_platform_connector_artifactory" "harnessartifactory" {
   url        = "https://harness.jfrog.io/artifactory/"
 }
 
-resource "harness_platform_environment" "dev" {
+resource "harness_platform_environment" "development_dev" {
   identifier = "dev"
   name       = "dev"
   org_id     = data.harness_platform_organization.default.id
@@ -56,7 +51,7 @@ environment:
 EOF
 }
 
-resource "harness_platform_infrastructure" "dev_sa" {
+resource "harness_platform_infrastructure" "development_dev_sa" {
   identifier      = "sa"
   name            = "sa"
   org_id          = data.harness_platform_organization.default.id
@@ -83,7 +78,7 @@ infrastructureDefinition:
 EOF
 }
 
-resource "harness_platform_environment" "stage" {
+resource "harness_platform_environment" "development_stage" {
   identifier = "stage"
   name       = "stage"
   org_id     = data.harness_platform_organization.default.id
@@ -102,7 +97,7 @@ environment:
 EOF
 }
 
-resource "harness_platform_infrastructure" "stage_sa" {
+resource "harness_platform_infrastructure" "development_stage_sa" {
   identifier      = "sa"
   name            = "sa"
   org_id          = data.harness_platform_organization.default.id
