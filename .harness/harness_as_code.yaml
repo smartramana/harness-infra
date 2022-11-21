@@ -1,7 +1,7 @@
 pipeline:
-  name: harness-infra
-  identifier: harnessinfra
-  projectIdentifier: development
+  name: harness as code
+  identifier: harness_as_code
+  projectIdentifier: Default_Project_1662659562703
   orgIdentifier: default
   tags: {}
   stages:
@@ -32,23 +32,6 @@ pipeline:
                           - name: TARGET_ROLE_ARN
                             type: String
                             value: <+input>
-              - step:
-                  type: ShellScript
-                  name: github keys
-                  identifier: github_keys
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          mkdir -p ~/.ssh
-                          ssh-keyscan github.com >> ~/.ssh/known_hosts
-                          cat ~/.ssh/known_hosts
-                    environmentVariables: []
-                    outputVariables: []
-                  timeout: 10m
               - step:
                   type: TerraformPlan
                   name: plan
@@ -87,7 +70,7 @@ pipeline:
                         - name: AWS_SESSION_TOKEN
                           value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
                           type: String
-                    provisionerIdentifier: something
+                    provisionerIdentifier: harnessascode
                   timeout: 10m
                   failureStrategies: []
               - step:
@@ -99,7 +82,7 @@ pipeline:
                     includePipelineExecutionHistory: true
                     approvers:
                       userGroups:
-                        - account._account_all_users
+                        - _project_all_users
                       minimumCount: 1
                       disallowPipelineExecutor: false
                     approverInputs: []
@@ -111,7 +94,7 @@ pipeline:
                   spec:
                     configuration:
                       type: InheritFromPlan
-                    provisionerIdentifier: something
+                    provisionerIdentifier: harnessascode
                   timeout: 10m
                   failureStrategies: []
         tags: {}
