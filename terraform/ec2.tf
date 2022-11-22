@@ -62,7 +62,7 @@ resource "aws_instance" "minikube" {
   associate_public_ip_address = false
   vpc_security_group_ids      = [aws_security_group.instance.id]
 
-  iam_instance_profile = aws_iam_instance_profile.instance.id
+  iam_instance_profile = aws_iam_instance_profile.minikube.id
 
   tags = {
     Name = "riley-minikube"
