@@ -4,15 +4,6 @@ resource "harness_platform_pipeline" "build_react-image-compressor" {
   project_id = harness_platform_project.development.id
   name       = "build_react_image_compressor"
 
-  # git_details {
-  #   branch_name    = "main"
-  #   commit_message = "pipeline: pipeline_tf_git"
-  #   file_path      = ".harness/example/pipeline_tf_git.yaml"
-  #   connector_ref  = "account:rssnyder"
-  #   store_type     = "REMOTE"
-  #   repo_name      = "harness-infra"
-  # }
-
   yaml = <<EOF
 pipeline:
   name: build_react_image_compressor

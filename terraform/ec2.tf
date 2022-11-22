@@ -48,14 +48,14 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2RoleforEC2FullAccess" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
 }
 
-resource "aws_iam_instance_profile" "instance" {
+resource "aws_iam_instance_profile" "minikube" {
   name = "riley_instance"
   role = aws_iam_role.instance.id
 }
 
-resource "aws_instance" "instance" {
+resource "aws_instance" "minikube" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.medium"
+  instance_type = "t3.xlarge"
   key_name      = "riley"
 
   subnet_id                   = module.vpc.private_subnets[0]
@@ -65,6 +65,6 @@ resource "aws_instance" "instance" {
   iam_instance_profile = aws_iam_instance_profile.instance.id
 
   tags = {
-    Name = "riley-nix"
+    Name = "riley-minikube"
   }
 }
