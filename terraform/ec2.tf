@@ -43,9 +43,38 @@ resource "aws_iam_role_policy_attachment" "AmazonEC2RoleforSSM" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
 }
 
-resource "aws_iam_role_policy_attachment" "AmazonEC2RoleforEC2FullAccess" {
-  role       = aws_iam_role.instance.id
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+# resource "aws_iam_role_policy_attachment" "AmazonEC2RoleforEC2FullAccess" {
+#   role       = aws_iam_role.instance.id
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+# }
+
+resource "aws_iam_policy" "instance" {
+  name        = "riley_instance"
+  description = "Policy for rileys ec2 instances"
+
+  policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+           "Sid": "GetArtifacts",
+           "Effect": "Allow",
+           "Action": [
+               "s3:*"
+           ],
+           "Resource": [
+              "${aws_s3_bucket.riley-snyder-harness-io.arn}",
+              "${aws_s3_bucket.riley-snyder-harness-io.arn}/*"
+           ]
+       }
+   ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "instance" {
+  role       = aws_iam_role.instance.name
+  policy_arn = aws_iam_policy.instance.arn
 }
 
 resource "aws_iam_instance_profile" "minikube" {
@@ -63,6 +92,8 @@ resource "aws_instance" "minikube" {
   vpc_security_group_ids      = [aws_security_group.instance.id]
 
   iam_instance_profile = aws_iam_instance_profile.minikube.id
+
+  user_data = templatefile("${path.module}/user-data.txt", {})
 
   tags = {
     Name = "riley-minikube"
