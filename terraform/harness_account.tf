@@ -33,6 +33,10 @@ resource "harness_platform_connector_aws" "sales" {
   identifier = "sales"
   name       = "sales"
 
+  cross_account_access {
+    role_arn = aws_iam_role.rileysnyderharnessio-assumed.arn
+  }
+
   inherit_from_delegate {
     delegate_selectors = [
       "ecs"
