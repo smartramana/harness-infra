@@ -1,0 +1,35 @@
+#!/bin/bash
+
+sudo apt-get -y update
+
+sudo apt-get install -y git unzip curl jq zsh
+
+# Install AWS CLI
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+
+# Install TF
+curl -O -L  https://releases.hashicorp.com/terraform/1.3.1/terraform_1.3.1_linux_amd64.zip
+unzip terraform_1.3.1_linux_amd64.zip
+sudo mv ./terraform /usr/bin/
+terraform --version
+
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+
+# Install k8s
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+sudo minikube start --memory 10000 --cpus 3 --force
+
+aws s3 cp s3://riley-snyder-harness-io/delegates/ec-two-minikube.yaml /root/ec-two-minikube.yaml && sudo kubectl apply -f /root/ec-two-minikube.yaml
+
+aws s3 cp s3://riley-snyder-harness-io/delegates/firstgen.yaml /root/firstgen.yaml && sudo kubectl apply -f /root/firstgen.yaml
+
+echo 'sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"' > /tmp/ohmy && chmod 777 /tmp/ohmy
