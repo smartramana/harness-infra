@@ -29,7 +29,7 @@ EOF
 }
 
 module "delegate" {
-  source = "git::https://github.com/rssnyder/terraform-aws-harness-delegate-ecs-fargate.git?ref=0.0.2"
+  source = "git::https://github.com/rssnyder/terraform-aws-harness-delegate-ecs-fargate.git?ref=0.0.3"
   #   source                    = "../../terraform-aws-harness-delegate-ecs-fargate"
   name                      = "ecs"
   harness_account_id        = "wlgELJ0TTre5aZhzpt8gVA"
@@ -38,7 +38,16 @@ module "delegate" {
   security_groups = [
     module.vpc.default_security_group_id
   ]
-  subnets = module.vpc.private_subnets
+  subnets     = module.vpc.private_subnets
+  init_script = <<EOF
+apt-get update -y
+apt-get install jq -y
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+  && unzip -q awscliv2.zip \
+  && ./aws/install \
+  && aws --version
+  EOF
+
 }
 
 # module "delegate-fallback" {
