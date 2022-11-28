@@ -5,6 +5,8 @@ data "aws_iam_policy_document" "rileysnyderharnessio-assumed" {
     principals {
       type = "AWS"
       identifiers = [
+        aws_iam_user.rileysnyderharnessio.arn,
+        aws_iam_user.rileysnyderharnessio-connector.arn,
         module.delegate.aws_iam_role_task
       ]
     }
