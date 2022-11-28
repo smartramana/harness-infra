@@ -17,18 +17,12 @@ pipeline:
                   name: assume
                   identifier: assume
                   template:
-                    templateRef: account.aws_assume_role_w_key
+                    templateRef: account.aws_assume_role
                     versionLabel: "1"
                     templateInputs:
                       type: ShellScript
                       spec:
                         environmentVariables:
-                          - name: AWS_ACCESS_KEY_ID
-                            type: String
-                            value: <+input>
-                          - name: AWS_SECRET_ACCESS_KEY
-                            type: String
-                            value: <+input>
                           - name: TARGET_ROLE_ARN
                             type: String
                             value: <+input>
