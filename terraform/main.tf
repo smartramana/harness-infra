@@ -29,3 +29,7 @@ module "ccm" {
   enable_optimization     = true
   prefix                  = "riley-"
 }
+
+resource "aws_ecr_repository" "rileysnyder" {
+  name = "rileysnyder"
+}

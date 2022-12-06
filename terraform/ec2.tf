@@ -93,9 +93,19 @@ resource "aws_instance" "minikube" {
 
   iam_instance_profile = aws_iam_instance_profile.minikube.id
 
+  root_block_device {
+    volume_size = "20"
+  }
+
   user_data = templatefile("${path.module}/user-data.txt", {})
 
   tags = {
     Name = "riley-minikube"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      ami
+    ]
   }
 }
