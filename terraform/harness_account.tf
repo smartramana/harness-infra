@@ -24,7 +24,7 @@ resource "harness_platform_connector_docker" "dockerhub" {
   url        = "https://index.docker.io/v2/"
 
   credentials {
-    username     = "rileysnyderharnessio"
+    username     = "rssnyder"
     password_ref = "account.dockerhub"
   }
 }
@@ -41,5 +41,14 @@ resource "harness_platform_connector_aws" "sales" {
     delegate_selectors = [
       "ecs"
     ]
+  }
+}
+
+resource "harness_platform_connector_kubernetes" "sagcp" {
+  identifier = "sagcp"
+  name       = "sagcp"
+
+  inherit_from_delegate {
+    delegate_selectors = ["sa-cluster"]
   }
 }

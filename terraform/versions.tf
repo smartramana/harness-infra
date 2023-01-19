@@ -6,8 +6,12 @@ terraform {
     }
     harness = {
       source  = "harness/harness"
-      version = "~> 0.8.0"
+      version = "0.13.2"
     }
+    # harness-ccm = {
+    #   source  = "harness.io/ccm/harness-ccm"
+    #   version = "1.0.1"
+    # }
   }
 }
 
@@ -20,3 +24,7 @@ provider "aws" {
     }
   }
 }
+
+# provider "harness-ccm" {
+#   account_identifier = "wlgELJ0TTre5aZhzpt8gVA"
+# }
