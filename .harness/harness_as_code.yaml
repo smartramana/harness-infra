@@ -31,9 +31,9 @@ pipeline:
                           type: Github
                           spec:
                             gitFetchType: Branch
-                            connectorRef: account.Github
-                            repoName: rssnyder/harness-infra
-                            branch: main
+                            connectorRef: account.gitssh
+                            repoName: harness-infra
+                            branch: <+input>
                             folderPath: terraform/
                         moduleSource:
                           useConnectorCredentials: true
@@ -84,5 +84,8 @@ pipeline:
                     provisionerIdentifier: harnessascode
                   timeout: 10m
                   failureStrategies: []
+                  when:
+                    stageStatus: Success
+                    condition: <+pipeline.stages.apply.spec.execution.steps.pla.spec.configuration.configFiles.store.spec.branch> == "main"
         tags: {}
   storeType: INLINE
