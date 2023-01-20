@@ -89,3 +89,5 @@ pipeline:
                     condition: <+pipeline.stages.apply.spec.execution.steps.pla.spec.configuration.configFiles.store.spec.branch> == "main"
         tags: {}
   storeType: INLINE
+  delegateSelectors:
+    - ecs
