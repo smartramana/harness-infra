@@ -35,7 +35,7 @@ EOF
 }
 
 module "delegate" {
-  source = "git::https://github.com/harness-community/terraform-aws-harness-delegate-ecs-fargate.git?ref=0.0.8"
+  source = "git::https://github.com/harness-community/terraform-aws-harness-delegate-ecs-fargate.git?ref=0.0.9"
   # source                    = "../../terraform-aws-harness-delegate-ecs-fargate"
   name                      = "ecs"
   harness_account_id        = "wlgELJ0TTre5aZhzpt8gVA"
@@ -43,6 +43,7 @@ module "delegate" {
   delegate_token_secret_arn = "arn:aws:secretsmanager:us-west-2:759984737373:secret:riley/delegate-zBsttc"
   registry_secret_arn       = "arn:aws:secretsmanager:us-west-2:759984737373:secret:riley/dockerhub-UiTqT3"
   runner_config             = file("${path.module}/pool.yml")
+  # init_script               = "echo 'SSDFSDFSDFSDF' && cat /opt/harness-delegate/config-delegate.yml"
   delegate_policy_arns = [
     aws_iam_policy.delegate_aws_access.arn,
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
