@@ -27,6 +27,32 @@ featureFlags:
           offVariation: "false"
         state: "on"
   - flag:
+      name: sourced_git
+      identifier: sourced_git
+      description: ""
+      permanent: false
+      spec:
+        type: string
+        default:
+          onVariation: alternate
+          offVariation: default
+        variations:
+        - identifier: default
+          value: https://github.com/rssnyder/harness-infra
+        - identifier: alternate
+          value: https://github.com/rssnyder/test
+      environments:
+      - identifier: dev
+        default:
+          onVariation: alternate
+          offVariation: default
+        state: "on"
+      - identifier: stage
+        default:
+          onVariation: alternate
+          offVariation: default
+        state: "off"
+  - flag:
       name: source_file
       identifier: source_file
       description: ""
@@ -47,6 +73,21 @@ featureFlags:
           onVariation: expert
           offVariation: default
         state: "off"
+        rules:
+        - priority: 0
+          serve:
+            distribution:
+              bucketBy: identifier
+              variations:
+              - weight: 50
+                variation: default
+              - weight: 50
+                variation: expert
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - test
       - identifier: stage
         default:
           onVariation: expert
@@ -73,35 +114,24 @@ featureFlags:
           onVariation: fools
           offVariation: default
         state: "off"
+        rules:
+        - priority: 0
+          serve:
+            distribution:
+              bucketBy: identifier
+              variations:
+              - weight: 50
+                variation: default
+              - weight: 50
+                variation: fools
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - test
       - identifier: stage
         default:
           onVariation: fools
-          offVariation: default
-        state: "off"
-  - flag:
-      name: sourced_git
-      identifier: sourced_git
-      description: ""
-      permanent: false
-      spec:
-        type: string
-        default:
-          onVariation: alternate
-          offVariation: default
-        variations:
-        - identifier: default
-          value: https://github.com/rssnyder/harness-infra
-        - identifier: alternate
-          value: https://github.com/rssnyder/test
-      environments:
-      - identifier: dev
-        default:
-          onVariation: alternate
-          offVariation: default
-        state: "on"
-      - identifier: stage
-        default:
-          onVariation: alternate
           offVariation: default
         state: "off"
   projectIdentifier: development
