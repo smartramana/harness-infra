@@ -46,7 +46,7 @@ featureFlags:
         default:
           onVariation: alternate
           offVariation: default
-        state: "on"
+        state: "off"
       - identifier: stage
         default:
           onVariation: alternate
