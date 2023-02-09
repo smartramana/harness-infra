@@ -6,8 +6,12 @@ terraform {
     }
     harness = {
       source  = "harness/harness"
-      version = "0.13.2"
+      version = "0.14.1"
     }
+    # harness-ccm = {
+    #   source  = "harness.io/ccm/harness-ccm"
+    #   version = "0.0.4"
+    # }
     # harness-ccm = {
     #   source  = "harness.io/ccm/harness-ccm"
     #   version = "1.0.1"

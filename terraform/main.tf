@@ -41,3 +41,21 @@ module "ccm" {
 resource "aws_ecr_repository" "rileysnyder" {
   name = "rileysnyder"
 }
+
+resource "harness_platform_connector_awscc" "rileyharnessccm" {
+  identifier = "rileyharnessccm"
+  name       = "riley-harness-ccm"
+
+  account_id  = "759984737373"
+  report_name = "riley-harness-ccm"
+  s3_bucket   = "riley-harness-ccm"
+  features_enabled = [
+    "OPTIMIZATION",
+    "VISIBILITY",
+    "BILLING",
+  ]
+  cross_account_access {
+    role_arn    = "arn:aws:iam::759984737373:role/riley-HarnessCERole"
+    external_id = "harness:891928451355:wlgELJ0TTre5aZhzpt8gVA"
+  }
+}

@@ -17,8 +17,8 @@ environment:
   description: ""
   tags: {}
   type: PreProduction
-  orgIdentifier: default
-  projectIdentifier: default
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.default.id}
   variables: []
 EOF
 }
@@ -37,14 +37,14 @@ infrastructureDefinition:
   identifier: sa
   description: ""
   tags: {}
-  orgIdentifier: default
-  projectIdentifier: default
-  environmentRef: dev
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.default.id}
+  environmentRef: ${harness_platform_environment.dev.id}
   deploymentType: Kubernetes
   type: KubernetesDirect
   spec:
     connectorRef: account.sagcp
-    namespace: riley-dev-<+service.name>
+    namespace: riley-${harness_platform_environment.dev.id}-<+service.name>
     releaseName: release-<+INFRA_KEY>
   allowSimultaneousDeployments: false
 EOF
@@ -86,7 +86,7 @@ service:
           sources:
             - spec:
                 connectorRef: account.dockerhub
-                imagePath: rileysnyderharnessio/delegate-immutable
+                imagePath: <+pipeline.stages.test.spec.execution.steps.test.spec.repo>
                 tag: <+pipeline.variables.test_tag>
               identifier: delegate
               type: DockerRegistry
@@ -94,7 +94,7 @@ service:
         - name: namespace
           type: String
           description: ""
-          value: riley-dev-delegate
+          value: riley-${harness_platform_environment.dev.id}-delegate
     type: Kubernetes
 EOF
 }

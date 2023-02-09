@@ -109,3 +109,31 @@ resource "aws_instance" "minikube" {
     ]
   }
 }
+
+# resource "aws_instance" "windows" {
+#   ami           = data.aws_ami.ubuntu.id
+#   instance_type = "t3.xlarge"
+#   key_name      = "riley"
+
+#   subnet_id                   = module.vpc.public_subnets[0]
+#   associate_public_ip_address = true
+#   vpc_security_group_ids      = [aws_security_group.instance.id]
+
+#   iam_instance_profile = aws_iam_instance_profile.minikube.id
+
+#   root_block_device {
+#     volume_size = "20"
+#   }
+
+#   user_data = templatefile("${path.module}/user-data.txt", {})
+
+#   tags = {
+#     Name = "riley-minikube"
+#   }
+
+#   lifecycle {
+#     ignore_changes = [
+#       ami
+#     ]
+#   }
+# }

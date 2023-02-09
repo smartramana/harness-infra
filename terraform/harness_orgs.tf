@@ -22,13 +22,3 @@ module "snyder-management" {
   global_tags = var.global_tags
 }
 
-module "williams" {
-  source = "git@github.com:harness-community/terraform-harness-modules.git//organizations"
-
-  name        = "williams"
-  description = "Harness Core Management Organization"
-  tags = {
-    purpose = "harness-management"
-  }
-  global_tags = var.global_tags
-}
