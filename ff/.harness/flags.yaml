@@ -133,6 +133,6 @@ featureFlags:
         default:
           onVariation: fools
           offVariation: default
-        state: "off"
+        state: "on"
   projectIdentifier: development
   orgIdentifier: default
