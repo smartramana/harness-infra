@@ -47,21 +47,6 @@ featureFlags:
           onVariation: expert
           offVariation: default
         state: "off"
-        rules:
-        - priority: 0
-          serve:
-            distribution:
-              bucketBy: identifier
-              variations:
-              - weight: 50
-                variation: default
-              - weight: 50
-                variation: expert
-          clauses:
-          - attribute: ""
-            op: segmentMatch
-            values:
-            - test
       - identifier: stage
         default:
           onVariation: expert
@@ -88,21 +73,6 @@ featureFlags:
           onVariation: fools
           offVariation: default
         state: "on"
-        rules:
-        - priority: 0
-          serve:
-            distribution:
-              bucketBy: identifier
-              variations:
-              - weight: 50
-                variation: default
-              - weight: 50
-                variation: fools
-          clauses:
-          - attribute: ""
-            op: segmentMatch
-            values:
-            - test
       - identifier: stage
         default:
           onVariation: fools
