@@ -40,7 +40,7 @@ featureFlags:
         - identifier: default
           value: App.js
         - identifier: expert
-          value: index.js
+          value: index.jss
       environments:
       - identifier: dev
         default:
