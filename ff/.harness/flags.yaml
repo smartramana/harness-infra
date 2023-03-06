@@ -72,6 +72,14 @@ featureFlags:
             op: segmentMatch
             values:
             - region_central
+        - priority: 3
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - region_east
       - identifier: stage
         default:
           onVariation: expert
@@ -123,6 +131,14 @@ featureFlags:
             op: segmentMatch
             values:
             - region_central
+        - priority: 3
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - region_east
       - identifier: stage
         default:
           onVariation: fools
