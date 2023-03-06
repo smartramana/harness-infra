@@ -56,6 +56,14 @@ featureFlags:
             op: segmentMatch
             values:
             - realm_red
+        - priority: 1
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - realm_blue
       - identifier: stage
         default:
           onVariation: expert
@@ -91,6 +99,14 @@ featureFlags:
             op: segmentMatch
             values:
             - realm_red
+        - priority: 1
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - realm_blue
       - identifier: stage
         default:
           onVariation: fools
