@@ -58,7 +58,7 @@ featureFlags:
             - realm_red
         - priority: 1
           serve:
-            serveVariation: default
+            serveVariation: expert
           clauses:
           - attribute: ""
             op: segmentMatch
