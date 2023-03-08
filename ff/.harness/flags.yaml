@@ -122,7 +122,7 @@ featureFlags:
       environments:
       - identifier: dev
         default:
-          onVariation: "true"
+          onVariation: "false"
           offVariation: "false"
         state: "off"
       - identifier: stage
