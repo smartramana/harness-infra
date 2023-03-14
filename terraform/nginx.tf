@@ -42,10 +42,12 @@ service:
         - name: port
           type: String
           description: ""
-          value: "80"
+          value: <+input>
+          default: "80"
         - name: replicas
           type: String
           description: ""
           value: <+input>
+          default: "1"
 EOF
 }

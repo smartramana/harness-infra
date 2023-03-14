@@ -52,3 +52,23 @@ resource "harness_platform_connector_kubernetes" "sagcp" {
     delegate_selectors = ["sa-cluster"]
   }
 }
+
+resource "harness_platform_connector_docker" "harness" {
+  identifier = "harness_images"
+  name       = "harness images"
+  type       = "Other"
+  url        = "https://app.harness.io/registry"
+}
+
+# resource "harness_platform_user" "proxy" {
+#   email       = "rileysndrproxy@harness.io"
+#   user_groups = ["_account_all_users"]
+#   role_bindings {
+#     role_identifier           = "_account_viewer"
+#     role_name                 = "Account Viewer"
+#     resource_group_name       = "All Resources Including Child Scopes"
+#     resource_group_identifier = "_all_resources_including_child_scopes"
+#     managed_role              = true
+#   }
+# }
+

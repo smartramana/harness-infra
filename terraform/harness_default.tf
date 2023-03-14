@@ -50,6 +50,52 @@ infrastructureDefinition:
 EOF
 }
 
+resource "harness_platform_environment" "stage" {
+  identifier = "stage"
+  name       = "stage"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = data.harness_platform_project.default.id
+  type       = "PreProduction"
+  yaml       = <<EOF
+environment:
+  name: stage
+  identifier: stage
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.default.id}
+  variables: []
+EOF
+}
+
+resource "harness_platform_infrastructure" "stage_sa" {
+  identifier      = "sa"
+  name            = "sa"
+  org_id          = data.harness_platform_organization.default.id
+  project_id      = data.harness_platform_project.default.id
+  env_id          = harness_platform_environment.stage.id
+  type            = "KubernetesDirect"
+  deployment_type = "Kubernetes"
+  yaml            = <<EOF
+infrastructureDefinition:
+  name: sa
+  identifier: sa
+  description: ""
+  tags: {}
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.default.id}
+  environmentRef: ${harness_platform_environment.stage.id}
+  deploymentType: Kubernetes
+  type: KubernetesDirect
+  spec:
+    connectorRef: account.sagcp
+    namespace: riley-${harness_platform_environment.stage.id}-<+service.name>
+    releaseName: release-<+INFRA_KEY>
+  allowSimultaneousDeployments: false
+EOF
+}
+
 resource "harness_platform_service" "delegate" {
   identifier = "delegate"
   name       = "delegate"
@@ -64,8 +110,20 @@ service:
     spec:
       manifests:
         - manifest:
-            identifier: delegate
-            type: K8sManifest
+            identifier: harness-delegate-ng
+            type: HelmChart
+            spec:
+              store:
+                type: Http
+                spec:
+                  connectorRef: account.harness
+              chartName: harness-delegate-ng
+              chartVersion: ""
+              helmVersion: V3
+              skipResourceVersioning: false
+        - manifest:
+            identifier: template
+            type: Values
             spec:
               store:
                 type: Github
@@ -73,13 +131,9 @@ service:
                   connectorRef: account.rssnyder
                   gitFetchType: Branch
                   paths:
-                    - delegate.yaml
+                    - delegate_values.yaml
                   repoName: template
                   branch: main
-              valuesPaths:
-                - delegate_values.yaml
-                - namespace.yaml
-              skipResourceVersioning: false
       artifacts:
         primary:
           primaryArtifactRef: <+input>
@@ -91,10 +145,10 @@ service:
               identifier: delegate
               type: DockerRegistry
       variables:
-        - name: namespace
+        - name: delegate_name
           type: String
           description: ""
-          value: riley-${harness_platform_environment.dev.id}-delegate
+          value: testdelegate
     type: Kubernetes
 EOF
 }

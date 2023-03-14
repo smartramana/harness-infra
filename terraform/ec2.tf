@@ -82,9 +82,9 @@ resource "aws_iam_instance_profile" "minikube" {
   role = aws_iam_role.instance.id
 }
 
-resource "aws_instance" "minikube" {
+resource "aws_instance" "workstation" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.xlarge"
+  instance_type = "t3.2xlarge"
   key_name      = "riley"
 
   subnet_id                   = module.vpc.private_subnets[0]
@@ -100,15 +100,47 @@ resource "aws_instance" "minikube" {
   user_data = templatefile("${path.module}/user-data.txt", {})
 
   tags = {
-    Name = "riley-minikube"
+    Name = "riley-workstation"
   }
 
   lifecycle {
     ignore_changes = [
-      ami
+      ami,
+      user_data
     ]
   }
 }
+
+# resource "aws_instance" "workstation_peer" {
+#   ami           = data.aws_ami.ubuntu.id
+#   instance_type = "t3.2xlarge"
+#   key_name      = "riley"
+
+#   subnet_id                   = module.vpc.private_subnets[0]
+#   associate_public_ip_address = false
+#   vpc_security_group_ids      = [aws_security_group.instance.id]
+
+#   iam_instance_profile = aws_iam_instance_profile.minikube.id
+
+#   root_block_device {
+#     volume_size = "20"
+#   }
+
+#   user_data = templatefile("${path.module}/user-data.txt", {})
+
+#   tags = {
+#     Name        = "riley-workstation_peer"
+#     ttl         = "-1"
+#     will_delete = "soon"
+#   }
+
+#   lifecycle {
+#     ignore_changes = [
+#       ami,
+#       user_data
+#     ]
+#   }
+# }
 
 # resource "aws_instance" "windows" {
 #   ami           = data.aws_ami.ubuntu.id
