@@ -1,8 +1,8 @@
 featureFlags:
   flags:
   - flag:
-      name: index
-      identifier: index
+      name: again
+      identifier: again
       description: ""
       permanent: false
       spec:
@@ -25,7 +25,111 @@ featureFlags:
         default:
           onVariation: "true"
           offVariation: "false"
+        state: "off"
+  - flag:
+      name: asdfsdf
+      identifier: asdfsdf
+      description: ""
+      permanent: false
+      spec:
+        type: boolean
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        variations:
+        - identifier: "true"
+          value: "true"
+        - identifier: "false"
+          value: "false"
+      environments:
+      - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+      - identifier: stage
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+  - flag:
+      name: creatortest
+      identifier: creatortest
+      description: ""
+      permanent: false
+      spec:
+        type: boolean
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        variations:
+        - identifier: "true"
+          value: "true"
+        - identifier: "false"
+          value: "false"
+      environments:
+      - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+      - identifier: stage
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+  - flag:
+      name: newonw
+      identifier: newonw
+      description: ""
+      permanent: false
+      spec:
+        type: boolean
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        variations:
+        - identifier: "true"
+          value: "true"
+        - identifier: "false"
+          value: "false"
+      environments:
+      - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+      - identifier: stage
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+  - flag:
+      name: safasdfsaf
+      identifier: safasdfsaf
+      description: ""
+      permanent: false
+      spec:
+        type: boolean
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        variations:
+        - identifier: "true"
+          value: "true"
+        - identifier: "false"
+          value: "false"
+      environments:
+      - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
         state: "on"
+      - identifier: stage
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
   - flag:
       name: sourced_git
       identifier: sourced_git
@@ -76,18 +180,36 @@ featureFlags:
         rules:
         - priority: 0
           serve:
-            distribution:
-              bucketBy: identifier
-              variations:
-              - weight: 50
-                variation: default
-              - weight: 50
-                variation: expert
+            serveVariation: default
           clauses:
           - attribute: ""
             op: segmentMatch
             values:
-            - test
+            - realm_red
+        - priority: 1
+          serve:
+            serveVariation: expert
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - realm_blue
+        - priority: 2
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - region_central
+        - priority: 3
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - region_east
       - identifier: stage
         default:
           onVariation: expert
@@ -113,26 +235,96 @@ featureFlags:
         default:
           onVariation: fools
           offVariation: default
-        state: "off"
+        state: "on"
         rules:
         - priority: 0
           serve:
-            distribution:
-              bucketBy: identifier
-              variations:
-              - weight: 50
-                variation: default
-              - weight: 50
-                variation: fools
+            serveVariation: default
           clauses:
           - attribute: ""
             op: segmentMatch
             values:
-            - test
+            - realm_red
+        - priority: 1
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - realm_blue
+        - priority: 2
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - region_central
+        - priority: 3
+          serve:
+            serveVariation: default
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - region_east
       - identifier: stage
         default:
           onVariation: fools
           offVariation: default
+        state: "off"
+  - flag:
+      name: test
+      identifier: test
+      description: ""
+      permanent: false
+      spec:
+        type: boolean
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        variations:
+        - identifier: "true"
+          value: "true"
+        - identifier: "false"
+          value: "false"
+      environments:
+      - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+      - identifier: stage
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+  - flag:
+      name: testthing
+      identifier: testthing
+      description: ""
+      permanent: false
+      spec:
+        type: boolean
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        variations:
+        - identifier: "true"
+          value: "true"
+        - identifier: "false"
+          value: "false"
+      environments:
+      - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+      - identifier: stage
+        default:
+          onVariation: "true"
+          offVariation: "false"
         state: "off"
   projectIdentifier: development
   orgIdentifier: default
