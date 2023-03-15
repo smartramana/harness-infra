@@ -179,43 +179,6 @@ featureFlags:
           onVariation: expert
           offVariation: default
         state: "off"
-        rules:
-        - priority: 0
-          serve:
-            serveVariation: default
-          clauses:
-          - attribute: ""
-            op: segmentMatch
-            values:
-            - realm_red
-        - priority: 1
-          serve:
-            serveVariation: expert
-          clauses:
-          - attribute: ""
-            op: segmentMatch
-            values:
-            - realm_blue
-        - priority: 2
-          serve:
-            serveVariation: default
-          clauses:
-          - attribute: ""
-            op: segmentMatch
-            values:
-            - region_central
-        - priority: 3
-          serve:
-            serveVariation: default
-          clauses:
-          - attribute: ""
-            op: segmentMatch
-            values:
-            - region_east
-        targetRules:
-        - targets:
-          - identifier: customerID_X948
-          variation: css
       - identifier: stage
         default:
           onVariation: expert
