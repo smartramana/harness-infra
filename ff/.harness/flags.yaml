@@ -212,6 +212,10 @@ featureFlags:
             op: segmentMatch
             values:
             - region_east
+        targetRules:
+        - targets:
+          - identifier: customerID_X948
+          variation: css
       - identifier: stage
         default:
           onVariation: expert
