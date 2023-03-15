@@ -171,6 +171,8 @@ featureFlags:
           value: App.js
         - identifier: expert
           value: index.js
+        - identifier: css
+          value: App.css
       environments:
       - identifier: dev
         default:
