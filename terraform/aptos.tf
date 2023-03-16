@@ -3,7 +3,7 @@ resource "harness_platform_input_set" "bundle0" {
   name        = "bundle0"
   org_id      = data.harness_platform_organization.default.id
   project_id  = harness_platform_project.development.id
-  pipeline_id = "aptos_demo"
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml        = <<-EOT
 inputSet:
   name: bundle0
@@ -28,7 +28,7 @@ resource "harness_platform_input_set" "bundle1" {
   name        = "bundle1"
   org_id      = data.harness_platform_organization.default.id
   project_id  = harness_platform_project.development.id
-  pipeline_id = "aptos_demo"
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml        = <<-EOT
 inputSet:
   name: bundle1
@@ -37,7 +37,7 @@ inputSet:
   orgIdentifier: ${data.harness_platform_organization.default.id}
   projectIdentifier: ${harness_platform_project.development.id}
   pipeline:
-    identifier: aptos_demo
+    identifier: ${harness_platform_pipeline.aptos_demo.id}
     variables:
       - name: dst_version
         type: String
@@ -53,7 +53,7 @@ resource "harness_platform_input_set" "bundle2" {
   name        = "bundle2"
   org_id      = data.harness_platform_organization.default.id
   project_id  = harness_platform_project.development.id
-  pipeline_id = "aptos_demo"
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml        = <<-EOT
 inputSet:
   name: bundle2
@@ -62,7 +62,7 @@ inputSet:
   orgIdentifier: ${data.harness_platform_organization.default.id}
   projectIdentifier: ${harness_platform_project.development.id}
   pipeline:
-    identifier: aptos_demo
+    identifier: ${harness_platform_pipeline.aptos_demo.id}
     variables:
       - name: dst_version
         type: String
@@ -78,7 +78,7 @@ resource "harness_platform_input_set" "customerA" {
   name        = "customerA"
   org_id      = data.harness_platform_organization.default.id
   project_id  = harness_platform_project.development.id
-  pipeline_id = "aptos_demo"
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml        = <<-EOT
 inputSet:
   name: customerA
@@ -87,7 +87,7 @@ inputSet:
   orgIdentifier: ${data.harness_platform_organization.default.id}
   projectIdentifier: ${harness_platform_project.development.id}
   pipeline:
-    identifier: aptos_demo
+    identifier: ${harness_platform_pipeline.aptos_demo.id}
     stages:
       - stage:
           identifier: dev
@@ -135,7 +135,7 @@ resource "harness_platform_input_set" "customerB" {
   name        = "customerB"
   org_id      = data.harness_platform_organization.default.id
   project_id  = harness_platform_project.development.id
-  pipeline_id = "aptos_demo"
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml        = <<-EOT
 inputSet:
   name: customerB
@@ -144,7 +144,7 @@ inputSet:
   orgIdentifier: ${data.harness_platform_organization.default.id}
   projectIdentifier: ${harness_platform_project.development.id}
   pipeline:
-    identifier: aptos_demo
+    identifier: ${harness_platform_pipeline.aptos_demo.id}
     stages:
       - stage:
           identifier: dev
@@ -164,5 +164,72 @@ inputSet:
                                 type: DockerRegistry
                                 spec:
                                   tag: <+pipeline.variables.dst_version>
+  EOT
+}
+
+resource "harness_platform_pipeline" "aptos_demo" {
+  identifier = "aptos_demo"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = harness_platform_project.development.id
+  name       = "aptos_demo"
+
+  yaml = <<-EOT
+pipeline:
+  name: aptos_demo
+  identifier: aptos_demo
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${harness_platform_project.development.id}
+  tags: {}
+  stages:
+    - stage:
+        name: dev
+        identifier: dev
+        description: ""
+        type: Deployment
+        spec:
+          deploymentType: Kubernetes
+          services:
+            values: <+input>
+            metadata:
+              parallel: true
+          environment:
+            environmentRef: dev
+            deployToAll: false
+            infrastructureDefinitions:
+              - identifier: sagcp
+          execution:
+            steps:
+              - step:
+                  name: Rollout Deployment
+                  identifier: rolloutDeployment
+                  type: K8sRollingDeploy
+                  timeout: 10m
+                  spec:
+                    skipDryRun: false
+                    pruningEnabled: false
+            rollbackSteps:
+              - step:
+                  name: Rollback Rollout Deployment
+                  identifier: rollbackRolloutDeployment
+                  type: K8sRollingRollback
+                  timeout: 10m
+                  spec:
+                    pruningEnabled: false
+        tags: {}
+        failureStrategies:
+          - onFailure:
+              errors:
+                - AllErrors
+              action:
+                type: StageRollback
+  variables:
+    - name: dst_version
+      type: String
+      description: ""
+      value: <+input>
+    - name: nginx_version
+      type: String
+      description: ""
+      value: <+input>
   EOT
 }
