@@ -30,7 +30,7 @@ service:
               skipResourceVersioning: false
       artifacts:
         primary:
-          primaryArtifactRef: <+input>
+          primaryArtifactRef: nginx
           sources:
             - spec:
                 connectorRef: account.dockerhub
