@@ -65,7 +65,7 @@ pipeline:
                   name: plan pr
                   identifier: plan_pr
                   spec:
-                    url: https://api.github.com/repos/rssnyder/harness-infra/issues/<+trigger.prNumber>/comments
+                    url: https://api.github.com/repos/rssnyder/<+execution.steps.pla.spec.configuration.configFiles.store.spec.repoName>/issues/<+trigger.prNumber>/comments
                     method: POST
                     headers:
                       - key: Accept
