@@ -74,7 +74,7 @@ featureFlags:
         default:
           onVariation: expert
           offVariation: default
-        state: "on"
+        state: "off"
       - identifier: stage
         default:
           onVariation: expert
