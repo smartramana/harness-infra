@@ -247,6 +247,33 @@ inputSet:
   EOT
 }
 
+resource "harness_platform_input_set" "customerBslimV2" {
+  identifier  = "customerBslimv2"
+  name        = "customerBslimv2"
+  org_id      = data.harness_platform_organization.default.id
+  project_id  = harness_platform_project.development.id
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
+  yaml        = <<-EOT
+inputSet:
+  name: customerBslimv2
+  tags: {}
+  identifier: customerBslimv2
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${harness_platform_project.development.id}
+  pipeline:
+    identifier: ${harness_platform_pipeline.aptos_demo.id}
+    stages:
+      - stage:
+          identifier: dev
+          type: Deployment
+          spec:
+            services:
+              values:
+                - serviceRef: serviceAslim
+                - serviceRef: serviceBslim
+  EOT
+}
+
 # pipeline
 
 resource "harness_platform_pipeline" "aptos_demo" {
