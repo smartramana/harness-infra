@@ -91,7 +91,7 @@ inputSet:
 
 # finally we create a service definition for every service listed in the bundles file
 resource "harness_platform_service" "aptosone" {
-  for_each   = { for service in local.eos_163_1_services : "${service.name}.${service.version}" => service }
+  for_each   = { for service in local.eos_163_1_services : service.name => service }
   identifier = each.value.name
   name       = each.value.name
   org_id     = data.harness_platform_organization.default.id
