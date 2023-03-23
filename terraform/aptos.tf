@@ -1,5 +1,44 @@
 # input sets
 
+locals {
+  customerCdev = jsondecode(file("${path.module}/customerCdev.json"))
+  bundle0      = jsondecode(file("${path.module}/REL-EndOfSprint-163.1.json"))
+}
+
+resource "harness_platform_input_set" "customerCslim" {
+  identifier  = "customerCslim"
+  name        = "customerCslim"
+  org_id      = data.harness_platform_organization.default.id
+  project_id  = harness_platform_project.development.id
+  pipeline_id = harness_platform_pipeline.aptos_demo.id
+  yaml        = <<-EOT
+inputSet:
+  name: customerCslim
+  tags: {}
+  identifier: customerCslim
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${harness_platform_project.development.id}
+  pipeline:
+    identifier: ${harness_platform_pipeline.aptos_demo.id}
+    stages:
+      - stage:
+          identifier: dev
+          type: Deployment
+          spec:
+            services:
+              values:
+              %{for target_bundle in local.customerCdev.deployments.dev-ao-omni-shared.deploy_bundles}
+                %{for bundle in local.bundle0.bundles}
+                  %{if bundle.name == target_bundle}
+                    %{for service in bundle.services}
+                      - serviceRef: ${service.name}
+                    %{endfor}
+                  %{endif}
+                %{endfor}
+              %{endfor}
+  EOT
+}
+
 ## bundles == version manifests
 
 resource "harness_platform_input_set" "bundle0" {
@@ -308,12 +347,6 @@ pipeline:
           execution:
             steps:
               - step:
-                  name: create
-                  identifier: create
-                  template:
-                    templateRef: account.create_namespace
-                    versionLabel: "1"
-              - step:
                   name: Rollout Deployment
                   identifier: rolloutDeployment
                   type: K8sRollingDeploy
@@ -321,12 +354,6 @@ pipeline:
                   spec:
                     skipDryRun: false
                     pruningEnabled: false
-              - step:
-                  name: delete
-                  identifier: delete
-                  template:
-                    templateRef: account.delete_namespace
-                    versionLabel: "1"
             rollbackSteps:
               - step:
                   name: Rollback Rollout Deployment
