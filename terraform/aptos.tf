@@ -7,9 +7,10 @@ locals {
   eos_163_1_services = flatten([
     for bundles in local.eos_163_1.bundles : [
       for service in bundles.services : {
-        name    = replace(service.name, "-", "_")
-        version = service.version
-        bundle  = bundles.name
+        name           = replace(service.name, "-", "_")
+        version        = service.version
+        bundle         = bundles.name
+        bundle_version = local.eos_163_1.version
       }
     ]
   ])
@@ -54,10 +55,40 @@ inputSet:
                 %{for bundle in local.eos_163_1.bundles}
                   %{if bundle.name == target_bundle}
                     %{for service in bundle.services}
-                      - serviceRef: ${service.name}
+                      - serviceRef: ${replace(service.name, "-", "_")}
+                        serviceInputs:
+                          serviceDefinition:
+                            type: Kubernetes
+                            spec:
+                              variables:
+                                - name: version
+                                  type: String
+                                  value: "<+pipeline.variables.${replace(service.name, "-", "_")}>"
                     %{endfor}
                   %{endif}
                 %{endfor}
+              %{endfor}
+              %{for service in local.customerAdev.deployments.dev-ao-omni-shared.deploy_services}
+                      - serviceRef: ${service}
+                        serviceInputs:
+                          serviceDefinition:
+                            type: Kubernetes
+                            spec:
+                              variables:
+                                - name: version
+                                  type: String
+                                  value: "<+pipeline.variables.${service}>"
+              %{endfor}
+              %{for service in keys(local.customerAdev.deployments.dev-ao-omni-shared.deploy_custom_services)}
+                      - serviceRef: ${replace(service, "-", "_")}
+                        serviceInputs:
+                          serviceDefinition:
+                            type: Kubernetes
+                            spec:
+                              variables:
+                                - name: version
+                                  type: String
+                                  value: "${local.customerAdev.deployments.dev-ao-omni-shared.deploy_custom_services[service]}"
               %{endfor}
   EOT
 }
@@ -136,8 +167,8 @@ service:
         - name: version
           type: String
           description: ""
-          value: "<+pipeline.variables.${each.value.name}>"
-          default: "1.0.0"
+          value: "<+input>"
+          default: "0.0.0"
 EOF
 }
 
