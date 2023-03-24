@@ -27,6 +27,54 @@ data "harness_platform_project" "aptos_one" {
   org_id     = data.harness_platform_organization.default.id
 }
 
+# we need an environment defined
+resource "harness_platform_environment" "test" {
+  identifier = "test"
+  name       = "test"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = data.harness_platform_project.aptos_one.id
+  type       = "PreProduction"
+  yaml       = <<EOF
+environment:
+  name: test
+  identifier: test
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.aptos_one.id}
+  variables: []
+EOF
+}
+
+# and an infrastructure (cluster) to deploy to
+resource "harness_platform_infrastructure" "test_k8s" {
+  identifier      = "test_k8s"
+  name            = "test_k8s"
+  org_id          = data.harness_platform_organization.default.id
+  project_id      = data.harness_platform_project.aptos_one.id
+  env_id          = harness_platform_environment.test.id
+  type            = "KubernetesDirect"
+  deployment_type = "Kubernetes"
+  yaml            = <<EOF
+infrastructureDefinition:
+  name: "test_k8s"
+  identifier: "test_k8s"
+  description: ""
+  tags: {}
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.aptos_one.id}
+  environmentRef: ${harness_platform_environment.test.id}
+  deploymentType: Kubernetes
+  type: KubernetesDirect
+  spec:
+    connectorRef: account.${harness_platform_connector_kubernetes.sagcp.id}
+    namespace: riley
+    releaseName: release-<+INFRA_KEY>
+  allowSimultaneousDeployments: false
+EOF
+}
+
 # create the input set that holds all the services a customer has subscribed to
 # based on the bundles defined in their customer json
 resource "harness_platform_input_set" "customerA" {
@@ -46,7 +94,7 @@ inputSet:
     identifier: ${harness_platform_pipeline.aptos_demo.id}
     stages:
       - stage:
-          identifier: dev
+          identifier: test
           type: Deployment
           spec:
             services:
@@ -55,40 +103,40 @@ inputSet:
                 %{for bundle in local.eos_163_1.bundles}
                   %{if bundle.name == target_bundle}
                     %{for service in bundle.services}
-                      - serviceRef: ${replace(service.name, "-", "_")}
-                        serviceInputs:
-                          serviceDefinition:
-                            type: Kubernetes
-                            spec:
-                              variables:
-                                - name: version
-                                  type: String
-                                  value: "<+pipeline.variables.${replace(service.name, "-", "_")}>"
+                - serviceRef: ${replace(service.name, "-", "_")}
+                  serviceInputs:
+                    serviceDefinition:
+                      type: Kubernetes
+                      spec:
+                        variables:
+                          - name: version
+                            type: String
+                            value: "<+pipeline.variables.${replace(service.name, "-", "_")}>"
                     %{endfor}
                   %{endif}
                 %{endfor}
               %{endfor}
               %{for service in local.customerAdev.deployments.dev-ao-omni-shared.deploy_services}
-                      - serviceRef: ${replace(service, "-", "_")}
-                        serviceInputs:
-                          serviceDefinition:
-                            type: Kubernetes
-                            spec:
-                              variables:
-                                - name: version
-                                  type: String
-                                  value: "<+pipeline.variables.${replace(service, "-", "_")}>"
+                - serviceRef: ${replace(service, "-", "_")}
+                  serviceInputs:
+                    serviceDefinition:
+                      type: Kubernetes
+                      spec:
+                        variables:
+                          - name: version
+                            type: String
+                            value: "<+pipeline.variables.${replace(service, "-", "_")}>"
               %{endfor}
               %{for service in keys(local.customerAdev.deployments.dev-ao-omni-shared.deploy_custom_services)}
-                      - serviceRef: ${replace(service, "-", "_")}
-                        serviceInputs:
-                          serviceDefinition:
-                            type: Kubernetes
-                            spec:
-                              variables:
-                                - name: version
-                                  type: String
-                                  value: "${local.customerAdev.deployments.dev-ao-omni-shared.deploy_custom_services[service]}"
+                - serviceRef: ${replace(service, "-", "_")}
+                  serviceInputs:
+                    serviceDefinition:
+                      type: Kubernetes
+                      spec:
+                        variables:
+                          - name: version
+                            type: String
+                            value: "${local.customerAdev.deployments.dev-ao-omni-shared.deploy_custom_services[service]}"
               %{endfor}
   EOT
 }
@@ -187,8 +235,8 @@ pipeline:
   tags: {}
   stages:
     - stage:
-        name: dev
-        identifier: dev
+        name: ${harness_platform_environment.test.id}
+        identifier: ${harness_platform_environment.test.id}
         description: ""
         type: Deployment
         spec:
@@ -198,10 +246,10 @@ pipeline:
             metadata:
               parallel: true
           environment:
-            environmentRef: dev
+            environmentRef: ${harness_platform_environment.test.id}
             deployToAll: false
             infrastructureDefinitions:
-              - identifier: sagcp
+              - identifier: ${harness_platform_infrastructure.test_k8s.id}
           execution:
             steps:
               - step:
