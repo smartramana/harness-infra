@@ -1,13 +1,27 @@
 locals {
+  # pull in all customer bundles and bundle manifests
+  customer_bundle_files = fileset(path.module, "customer*.json")
+  bundle_manifest_files = fileset(path.module, "REL-EndOfSprint-*.json")
+
   # we need one bundle manifest to serve as the source for all service definitions
-  # ideally this would be updated to be the most recent bundle as its released
-  all_bundles = jsondecode(file("${path.module}/REL-EndOfSprint-163.1.json"))
+  # here we attempt to pull in the latest bundle manifest by picking the last one (acending ordered list)
+  all_bundles = jsondecode(file(element(tolist(local.bundle_manifest_files), length(local.bundle_manifest_files) - 1)))
+
   # extract a master list of all services and versions
   all_bundles_services = flatten([
     for bundles in local.all_bundles.bundles : [
       for service in bundles.services : replace(service.name, "-", "_")
     ]
   ])
+
+  # test = flatten([
+  #   for customer in local.customer_bundle_files : [
+  #     for deployment in keys(jsondecode(file(customer)).deployments) : merge({
+  #       customer = split(".", customer)[0]
+  #       name     = deployment
+  #     }, jsondecode(file(customer)).deployments[deployment])
+  #   ]
+  # ])
 }
 
 data "harness_platform_organization" "default" {
@@ -74,7 +88,7 @@ EOF
 # assumes customer files are named customerSOMEIDENTIFIER.json
 # todo: hard coded to pull out dev-ao-omni-shared cluster
 resource "harness_platform_input_set" "customer" {
-  for_each = fileset(path.module, "customer*.json")
+  for_each = local.customer_bundle_files
 
   identifier  = lower(replace(split(".", each.value)[0], "-", "_"))
   name        = lower(replace(split(".", each.value)[0], "-", "_"))
@@ -143,7 +157,7 @@ inputSet:
 # one of these will be created for every  end-of-sprint manifest
 # assumes customer files are named REL-EndOfSprint-SOMEIDENTIFIER.json
 resource "harness_platform_input_set" "eos" {
-  for_each = fileset(path.module, "REL-EndOfSprint-*.json")
+  for_each = local.bundle_manifest_files
 
   identifier  = lower(replace(split(".", each.value)[0], "-", "_"))
   name        = lower(replace(split(".", each.value)[0], "-", "_"))
