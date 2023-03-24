@@ -1,10 +1,10 @@
 locals {
-  # pull in all customer bundles and bundle manifests
-  customer_bundle_files = fileset(path.module, "customer*.json")
+  # pull in all bundle manifests
   bundle_manifest_files = fileset(path.module, "REL-EndOfSprint-*.json")
 
   # we need one bundle manifest to serve as the source for all service definitions
   # here we attempt to pull in the latest bundle manifest by picking the last one (acending ordered list)
+  # from this file we will dirive all service definitions below
   all_bundles = jsondecode(file(element(tolist(local.bundle_manifest_files), length(local.bundle_manifest_files) - 1)))
 
   # extract a master list of all services and versions
@@ -14,14 +14,18 @@ locals {
     ]
   ])
 
-  # test = flatten([
-  #   for customer in local.customer_bundle_files : [
-  #     for deployment in keys(jsondecode(file(customer)).deployments) : merge({
-  #       customer = split(".", customer)[0]
-  #       name     = deployment
-  #     }, jsondecode(file(customer)).deployments[deployment])
-  #   ]
-  # ])
+  # pull in all customer bundles
+  customer_bundle_files = fileset(path.module, "customer*.json")
+
+  # extract all deployments mentioned in customer files
+  customer_deployments = flatten([
+    for customer in local.customer_bundle_files : [
+      for deployment in keys(jsondecode(file(customer)).deployments) : merge({
+        customer = split(".", customer)[0]
+        name     = deployment
+      }, jsondecode(file(customer)).deployments[deployment])
+    ]
+  ])
 }
 
 data "harness_platform_organization" "default" {
@@ -84,21 +88,22 @@ EOF
 }
 
 # create the input set that holds all the services a customer has subscribed to
-# based on the bundles defined in their customer json
+# based on the cluster and bundles defined in their customer json
 # assumes customer files are named customerSOMEIDENTIFIER.json
-# we define a specific resouce for each cluster
-resource "harness_platform_input_set" "dev-ao-omni-shared" {
-  for_each = local.customer_bundle_files
+resource "harness_platform_input_set" "customer" {
+  for_each = {
+    for deployment in local.customer_deployments : "${deployment.customer}-${deployment.name}" => deployment
+  }
 
-  identifier  = lower(replace("${split(".", each.value)[0]}-dev-ao-omni-shared", "-", "_"))
-  name        = lower(replace("${split(".", each.value)[0]}-dev-ao-omni-shared", "-", "_"))
+  identifier  = lower(replace("${each.value.customer}-${each.value.name}", "-", "_"))
+  name        = lower(replace("${each.value.customer}-${each.value.name}", "-", "_"))
   org_id      = data.harness_platform_organization.default.id
   project_id  = data.harness_platform_project.aptos_one.id
   pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml        = <<-EOT
 inputSet:
-  name: ${lower(replace("${split(".", each.value)[0]}-dev-ao-omni-shared", "-", "_"))}
-  identifier: ${lower(replace("${split(".", each.value)[0]}-dev-ao-omni-shared", "-", "_"))}
+  name: ${lower(replace("${each.value.customer}-${each.value.name}", "-", "_"))}
+  identifier: ${lower(replace("${each.value.customer}-${each.value.name}", "-", "_"))}
   tags: {}
   orgIdentifier: ${data.harness_platform_organization.default.id}
   projectIdentifier: ${data.harness_platform_project.aptos_one.id}
@@ -106,12 +111,12 @@ inputSet:
     identifier: ${harness_platform_pipeline.aptos_demo.id}
     stages:
       - stage:
-          identifier: test
+          identifier: ${harness_platform_environment.test.id}
           type: Deployment
           spec:
             services:
               values:
-              %{for target_bundle in jsondecode(file("${path.module}/${each.value}")).deployments["dev-ao-omni-shared"].deploy_bundles}
+              %{for target_bundle in each.value.deploy_bundles}
                 %{for bundle in local.all_bundles.bundles}
                   %{if bundle.name == target_bundle}
                     %{for service in bundle.services}
@@ -128,7 +133,7 @@ inputSet:
                   %{endif}
                 %{endfor}
               %{endfor}
-              %{for service in jsondecode(file("${path.module}/${each.value}")).deployments["dev-ao-omni-shared"].deploy_services}
+              %{for service in each.value.deploy_services}
                 - serviceRef: ${replace(service, "-", "_")}
                   serviceInputs:
                     serviceDefinition:
@@ -139,7 +144,7 @@ inputSet:
                             type: String
                             value: "<+pipeline.variables.${replace(service, "-", "_")}>"
               %{endfor}
-              %{for service in keys(jsondecode(file("${path.module}/${each.value}")).deployments["dev-ao-omni-shared"].deploy_custom_services)}
+              %{for service in keys(each.value.deploy_custom_services)}
                 - serviceRef: ${replace(service, "-", "_")}
                   serviceInputs:
                     serviceDefinition:
@@ -148,73 +153,7 @@ inputSet:
                         variables:
                           - name: version
                             type: String
-                            value: "${jsondecode(file("${path.module}/${each.value}")).deployments["dev-ao-omni-shared"].deploy_custom_services[service]}"
-              %{endfor}
-  EOT
-}
-
-resource "harness_platform_input_set" "dev-core-shared" {
-  for_each = local.customer_bundle_files
-
-  identifier  = lower(replace("${split(".", each.value)[0]}-dev-core-shared", "-", "_"))
-  name        = lower(replace("${split(".", each.value)[0]}-dev-core-shared", "-", "_"))
-  org_id      = data.harness_platform_organization.default.id
-  project_id  = data.harness_platform_project.aptos_one.id
-  pipeline_id = harness_platform_pipeline.aptos_demo.id
-  yaml        = <<-EOT
-inputSet:
-  name: ${lower(replace("${split(".", each.value)[0]}-dev-core-shared", "-", "_"))}
-  identifier: ${lower(replace("${split(".", each.value)[0]}-dev-core-shared", "-", "_"))}
-  tags: {}
-  orgIdentifier: ${data.harness_platform_organization.default.id}
-  projectIdentifier: ${data.harness_platform_project.aptos_one.id}
-  pipeline:
-    identifier: ${harness_platform_pipeline.aptos_demo.id}
-    stages:
-      - stage:
-          identifier: test
-          type: Deployment
-          spec:
-            services:
-              values:
-              %{for target_bundle in jsondecode(file("${path.module}/${each.value}")).deployments["dev-core-shared"].deploy_bundles}
-                %{for bundle in local.all_bundles.bundles}
-                  %{if bundle.name == target_bundle}
-                    %{for service in bundle.services}
-                - serviceRef: ${replace(service.name, "-", "_")}
-                  serviceInputs:
-                    serviceDefinition:
-                      type: Kubernetes
-                      spec:
-                        variables:
-                          - name: version
-                            type: String
-                            value: "<+pipeline.variables.${replace(service.name, "-", "_")}>"
-                    %{endfor}
-                  %{endif}
-                %{endfor}
-              %{endfor}
-              %{for service in jsondecode(file("${path.module}/${each.value}")).deployments["dev-core-shared"].deploy_services}
-                - serviceRef: ${replace(service, "-", "_")}
-                  serviceInputs:
-                    serviceDefinition:
-                      type: Kubernetes
-                      spec:
-                        variables:
-                          - name: version
-                            type: String
-                            value: "<+pipeline.variables.${replace(service, "-", "_")}>"
-              %{endfor}
-              %{for service in keys(jsondecode(file("${path.module}/${each.value}")).deployments["dev-core-shared"].deploy_custom_services)}
-                - serviceRef: ${replace(service, "-", "_")}
-                  serviceInputs:
-                    serviceDefinition:
-                      type: Kubernetes
-                      spec:
-                        variables:
-                          - name: version
-                            type: String
-                            value: "${jsondecode(file("${path.module}/${each.value}")).deployments["dev-core-shared"].deploy_custom_services[service]}"
+                            value: "${each.value.deploy_custom_services[service]}"
               %{endfor}
   EOT
 }
