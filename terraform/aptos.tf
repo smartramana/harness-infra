@@ -69,7 +69,7 @@ inputSet:
                 %{endfor}
               %{endfor}
               %{for service in local.customerAdev.deployments.dev-ao-omni-shared.deploy_services}
-                      - serviceRef: ${service}
+                      - serviceRef: ${replace(service, "-", "_")}
                         serviceInputs:
                           serviceDefinition:
                             type: Kubernetes
@@ -77,7 +77,7 @@ inputSet:
                               variables:
                                 - name: version
                                   type: String
-                                  value: "<+pipeline.variables.${service}>"
+                                  value: "<+pipeline.variables.${replace(service, "-", "_")}>"
               %{endfor}
               %{for service in keys(local.customerAdev.deployments.dev-ao-omni-shared.deploy_custom_services)}
                       - serviceRef: ${replace(service, "-", "_")}
