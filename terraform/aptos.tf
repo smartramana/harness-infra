@@ -164,15 +164,15 @@ inputSet:
 resource "harness_platform_input_set" "eos" {
   for_each = local.bundle_manifest_files
 
-  identifier  = lower(replace(split(".", each.value)[0], "-", "_"))
-  name        = lower(replace(split(".", each.value)[0], "-", "_"))
+  identifier  = lower(replace(replace(split(".json", each.value)[0], "-", "_"), ".", "_"))
+  name        = lower(replace(replace(split(".json", each.value)[0], "-", "_"), ".", "_"))
   org_id      = data.harness_platform_organization.default.id
   project_id  = data.harness_platform_project.aptos_one.id
   pipeline_id = harness_platform_pipeline.aptos_demo.id
   yaml = <<-EOT
 inputSet:
-  name: ${lower(replace(split(".", each.value)[0], "-", "_"))}
-  identifier: ${lower(replace(split(".", each.value)[0], "-", "_"))}
+  name: ${lower(replace(replace(split(".json", each.value)[0], "-", "_"), ".", "_"))}
+  identifier: ${lower(replace(replace(split(".json", each.value)[0], "-", "_"), ".", "_"))}
   orgIdentifier: ${data.harness_platform_organization.default.id}
   projectIdentifier: ${data.harness_platform_project.aptos_one.id}
   tags: {}
