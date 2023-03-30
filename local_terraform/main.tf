@@ -1,54 +1,76 @@
-resource "azurerm_resource_group" "rileysnyderharnessio" {
-  name     = "rileysnyderharnessio"
-  location = "South Central US"
+resource "harness_platform_pipeline" "gke_dev" {
+  identifier = "gke_dev"
+  org_id     = "default"
+  project_id = "development"
+  name       = "gke_dev"
 
-  tags = {
-    owner = "riley.snyder@harness.io"
-    ttl   = "-1"
-  }
+  yaml = <<-EOT
+pipeline:
+  name: gke_dev
+  identifier: gke_dev
+  orgIdentifier: default
+  projectIdentifier: development
+  tags: {}
+  stages:
+    - stage:
+        name: dev
+        identifier: dev
+        template:
+          templateRef: gke
+          versionLabel: "1"
+          templateInputs:
+            type: Deployment
+            spec:
+              services:
+                values: <+input>
+  variables:
+    - name: scp_service_customer
+      type: String
+      value: <+input>
+    - name: scp_service_loyalty_memberships
+      type: String
+      value: <+input>
+    - name: scp_service_eom_inventory_facade
+      type: String
+      value: <+input>
+    - name: scp_service_eom_order_facade
+      type: String
+      value: <+input>
+  EOT
 }
 
-# module "network" {
-#   source = "Azure/network/azurerm"
-
-#   vnet_name           = "sa-lab"
-#   resource_group_name = azurerm_resource_group.rileysnyderharnessio.name
-#   address_spaces      = ["10.0.0.0/16"]
-#   subnet_prefixes     = ["10.0.1.0/24"]
-#   subnet_names        = ["subnet0"]
-
-#   use_for_each = true
-#   tags = {
-#     owner = "riley.snyder@harness.io"
-#     ttl   = "-1"
-#   }
-# }
-
-# resource "azurerm_container_group" "delegate" {
-#   name                = "aci"
-#   location            = azurerm_resource_group.rileysnyderharnessio.location
-#   resource_group_name = azurerm_resource_group.rileysnyderharnessio.name
-#   ip_address_type     = "Private"
-#   #   dns_name_label      = "harness-delegate"
-#   os_type    = "Linux"
-#   subnet_ids = module.network.vnet_subnets
-
-#   container {
-#     name   = "harness-delegate"
-#     image  = "harness/delegate:latest"
-#     cpu    = "1"
-#     memory = "1.5"
-#     environment_variables = {
-#       ACCOUNT_ID                = "wlgELJ0TTre5aZhzpt8gVA"
-#       DELEGATE_TOKEN            = "6b3f9392f5a8037372c86c906dd13ce9"
-#       MANAGER_HOST_AND_PORT     = "https://app.harness.io/gratis"
-#       LOG_STREAMING_SERVICE_URL = "https://app.harness.io/gratis/log-service/"
-#       DEPLOY_MODE               = "KUBERNETES"
-#       DELEGATE_NAME             = "aci"
-#       NEXT_GEN                  = "true"
-#       DELEGATE_TYPE             = "DOCKER"
-#       DELEGATE_TAGS             = ""
-#       INIT_SCRIPT               = "echo 'Docker delegate init script executed.'"
-#     }
-#   }
-# }
+resource "harness_platform_triggers" "gke_dev" {
+  identifier = "gke_dev"
+  org_id     = "default"
+  project_id = "development"
+  name       = "gke_dev"
+  target_id  = harness_platform_pipeline.gke_dev.id
+  yaml       = <<-EOT
+trigger:
+  name: release
+  identifier: release
+  enabled: true
+  orgIdentifier: default
+  projectIdentifier: Default_Project_1659484619331
+  pipelineIdentifier: dst
+  source:
+    type: Webhook
+    spec:
+      type: Custom
+      spec:
+        payloadConditions:
+          - key: <+trigger.payload.action>
+            operator: Equals
+            value: created
+  inputYaml: |
+    pipeline:
+      identifier: dst
+      properties:
+        ci:
+          codebase:
+            build:
+              type: tag
+              spec:
+                tag: <+eventPayload.release.tag_name>
+    EOT
+}

@@ -1,12 +1,8 @@
 terraform {
   required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "3.35.0"
+    harness = {
+      source  = "harness/harness"
+      version = "0.14.11"
     }
   }
-}
-
-provider "azurerm" {
-  features {}
 }
