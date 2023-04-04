@@ -100,7 +100,7 @@ featureFlags:
         default:
           onVariation: fools
           offVariation: default
-        state: "on"
+        state: "off"
         rules:
         - priority: 0
           serve:
