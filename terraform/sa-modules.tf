@@ -1,5 +1,5 @@
 module "harness-ci-factory" {
-  source = "git@github.com:harness-community/solutions-architecture.git//harness-ci-factory?ref=feature/harness-ci-factory"
+  source = "git@github.com:harness-community/solutions-architecture.git//harness-ci-factory?ref=main"
   # source = "../../solutions-architecture/harness-ci-factory"
 
   harness_api_key_secret           = "account.harness_api_token"
