@@ -37,7 +37,6 @@ pipeline:
                             folderPath: terraform/
                         moduleSource:
                           useConnectorCredentials: true
-                      secretManagerRef: harnessSecretManager
                       environmentVariables:
                         - name: AWS_REGION
                           value: us-west-2
@@ -57,6 +56,13 @@ pipeline:
                         - name: AWS_SESSION_TOKEN
                           value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
                           type: String
+                      varFiles:
+                        - varFile:
+                            spec:
+                              content: vscode_password = "<+secret.getValue("vscode_password")"
+                            identifier: inputs
+                            type: Inline
+                      secretManagerRef: harnessSecretManager
                     provisionerIdentifier: harnessascode
                   timeout: 10m
                   failureStrategies: []
