@@ -255,6 +255,15 @@ featureFlags:
           onVariation: "true"
           offVariation: "false"
         state: "off"
+        rules:
+        - priority: 0
+          serve:
+            serveVariation: "false"
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - myflaggroup
       - identifier: stage
         default:
           onVariation: "true"
