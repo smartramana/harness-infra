@@ -56,6 +56,14 @@ featureFlags:
             op: segmentMatch
             values:
             - realm_blue
+        - priority: 1
+          serve:
+            serveVariation: "false"
+          clauses:
+          - attribute: ""
+            op: segmentMatch
+            values:
+            - myflaggroup
       - identifier: stage
         default:
           onVariation: "true"
