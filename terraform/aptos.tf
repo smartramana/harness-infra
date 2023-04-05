@@ -104,6 +104,15 @@
 #   projectIdentifier: ${data.harness_platform_project.aptos_one.id}
 #   pipeline:
 #     identifier: ${harness_platform_pipeline.aptos_demo.id}
+#     variables:
+#     %{for service in flatten([for bundles in jsondecode(file("${path.module}/REL-EndOfSprint-${each.value.release}.json")).bundles : [for service in bundles.services : {
+#   name    = replace(service.name, "-", "_")
+#   version = service.version
+# }]])}
+#       - name: ${service.name}
+#         type: String
+#         value: ${service.version}
+#     %{endfor}
 #     stages:
 #       - stage:
 #           identifier: ${harness_platform_environment.test.id}
