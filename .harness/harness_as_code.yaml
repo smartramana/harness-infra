@@ -59,7 +59,7 @@ pipeline:
                       varFiles:
                         - varFile:
                             spec:
-                              content: vscode_password = "<+secret.getValue("vscode_password")"
+                              content: vscode_password = "<+secret.getValue("vscode_password")>"
                             identifier: inputs
                             type: Inline
                       secretManagerRef: harnessSecretManager
