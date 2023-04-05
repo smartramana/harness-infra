@@ -95,7 +95,7 @@
 #   org_id      = data.harness_platform_organization.default.id
 #   project_id  = data.harness_platform_project.aptos_one.id
 #   pipeline_id = harness_platform_pipeline.aptos_demo.id
-#   yaml        = <<-EOT
+#   yaml = <<-EOT
 # inputSet:
 #   name: ${lower(replace("${each.value.customer}-${each.value.name}", "-", "_"))}
 #   identifier: ${lower(replace("${each.value.customer}-${each.value.name}", "-", "_"))}

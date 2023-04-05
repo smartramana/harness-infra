@@ -82,7 +82,7 @@ resource "aws_iam_instance_profile" "minikube" {
   role = aws_iam_role.instance.id
 }
 
-resource "aws_instance" "workstation" {
+resource "aws_instance" "code_server" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = "t3.2xlarge"
   key_name      = "riley"
@@ -97,10 +97,49 @@ resource "aws_instance" "workstation" {
     volume_size = "20"
   }
 
-  user_data = templatefile("${path.module}/user-data.txt", {})
+  user_data = <<EOF
+#!/bin/sh
+
+# source: https://github.com/coder/deploy-code-server/blob/main/deploy-vm/launch-code-server.sh
+
+# install code-server service system-wide
+export HOME=/root
+curl -fsSL https://code-server.dev/install.sh | sh
+
+# add our helper server to redirect to the proper URL for --link
+git clone https://github.com/bpmct/coder-cloud-redirect-server
+cd coder-cloud-redirect-server
+cp coder-cloud-redirect.service /etc/systemd/system/
+cp coder-cloud-redirect.py /usr/bin/
+
+# create a code-server user
+adduser --disabled-password --gecos "" coder
+echo "coder ALL=(ALL:ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/coder
+usermod -aG sudo coder
+
+# copy ssh keys from root
+cp -r /root/.ssh /home/coder/.ssh
+chown -R coder:coder /home/coder/.ssh
+
+# configure code-server to use --link with the "coder" user
+mkdir -p /home/coder/.config/code-server
+touch /home/coder/.config/code-server/config.yaml
+echo "bind-addr: 0.0.0.0:${var.vscode_port}
+auth: password
+password: ${var.vscode_password}
+cert: false" > /home/coder/.config/code-server/config.yaml
+chown -R coder:coder /home/coder/.config
+
+# start and enable code-server and our helper service
+systemctl enable --now code-server@coder
+systemctl enable --now coder-cloud-redirect
+EOF
 
   tags = {
-    Name = "riley-workstation"
+    Name        = "code_server"
+    owner       = "riley_snyder_harness_io"
+    ttl         = "-1"
+    will_delete = "soon"
   }
 
   lifecycle {
@@ -110,62 +149,3 @@ resource "aws_instance" "workstation" {
     ]
   }
 }
-
-# resource "aws_instance" "workstation_peer" {
-#   ami           = data.aws_ami.ubuntu.id
-#   instance_type = "t3.2xlarge"
-#   key_name      = "riley"
-
-#   subnet_id                   = module.vpc.private_subnets[0]
-#   associate_public_ip_address = false
-#   vpc_security_group_ids      = [aws_security_group.instance.id]
-
-#   iam_instance_profile = aws_iam_instance_profile.minikube.id
-
-#   root_block_device {
-#     volume_size = "20"
-#   }
-
-#   user_data = templatefile("${path.module}/user-data.txt", {})
-
-#   tags = {
-#     Name        = "riley-workstation_peer"
-#     ttl         = "-1"
-#     will_delete = "soon"
-#   }
-
-#   lifecycle {
-#     ignore_changes = [
-#       ami,
-#       user_data
-#     ]
-#   }
-# }
-
-# resource "aws_instance" "windows" {
-#   ami           = data.aws_ami.ubuntu.id
-#   instance_type = "t3.xlarge"
-#   key_name      = "riley"
-
-#   subnet_id                   = module.vpc.public_subnets[0]
-#   associate_public_ip_address = true
-#   vpc_security_group_ids      = [aws_security_group.instance.id]
-
-#   iam_instance_profile = aws_iam_instance_profile.minikube.id
-
-#   root_block_device {
-#     volume_size = "20"
-#   }
-
-#   user_data = templatefile("${path.module}/user-data.txt", {})
-
-#   tags = {
-#     Name = "riley-minikube"
-#   }
-
-#   lifecycle {
-#     ignore_changes = [
-#       ami
-#     ]
-#   }
-# }

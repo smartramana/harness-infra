@@ -1,76 +1,100 @@
-resource "harness_platform_pipeline" "gke_dev" {
-  identifier = "gke_dev"
-  org_id     = "default"
-  project_id = "development"
-  name       = "gke_dev"
-
-  yaml = <<-EOT
-pipeline:
-  name: gke_dev
-  identifier: gke_dev
-  orgIdentifier: default
-  projectIdentifier: development
-  tags: {}
-  stages:
-    - stage:
-        name: dev
-        identifier: dev
-        template:
-          templateRef: gke
-          versionLabel: "1"
-          templateInputs:
-            type: Deployment
-            spec:
-              services:
-                values: <+input>
-  variables:
-    - name: scp_service_customer
-      type: String
-      value: <+input>
-    - name: scp_service_loyalty_memberships
-      type: String
-      value: <+input>
-    - name: scp_service_eom_inventory_facade
-      type: String
-      value: <+input>
-    - name: scp_service_eom_order_facade
-      type: String
-      value: <+input>
-  EOT
+variable "token" {
+  type = string
 }
 
-resource "harness_platform_triggers" "gke_dev" {
-  identifier = "gke_dev"
-  org_id     = "default"
-  project_id = "development"
-  name       = "gke_dev"
-  target_id  = harness_platform_pipeline.gke_dev.id
-  yaml       = <<-EOT
-trigger:
-  name: release
-  identifier: release
-  enabled: true
-  orgIdentifier: default
-  projectIdentifier: Default_Project_1659484619331
-  pipelineIdentifier: dst
-  source:
-    type: Webhook
+data "harness_platform_organization" "default" {
+  identifier = "test"
+  name       = "test"
+}
+
+data "harness_platform_project" "default" {
+  identifier = "test"
+  name       = "test"
+  org_id     = data.harness_platform_organization.default.id
+}
+
+resource "harness_platform_service" "fargate-delegate" {
+  identifier = "fargatedelegate"
+  name       = "fargate-delegate"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = data.harness_platform_project.default.id
+  yaml       = <<EOF
+service:
+  name: fargate-delegate
+  identifier: fargatedelegate
+  serviceDefinition:
+    type: ECS
     spec:
-      type: Custom
-      spec:
-        payloadConditions:
-          - key: <+trigger.payload.action>
-            operator: Equals
-            value: created
-  inputYaml: |
-    pipeline:
-      identifier: dst
-      properties:
-        ci:
-          codebase:
-            build:
-              type: tag
-              spec:
-                tag: <+eventPayload.release.tag_name>
-    EOT
+      manifests:
+        - manifest:
+            identifier: task
+            type: EcsTaskDefinition
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: account.Github
+                  gitFetchType: Branch
+                  paths:
+                    - delegate_task.json
+                  repoName: rssnyder/template
+                  branch: main
+        - manifest:
+            identifier: service
+            type: EcsServiceDefinition
+            spec:
+              store:
+                type: Github
+                spec:
+                  connectorRef: account.Github
+                  gitFetchType: Branch
+                  paths:
+                    - delegate_service.json
+                  repoName: rssnyder/template
+                  branch: main
+      artifacts:
+        primary:
+          primaryArtifactRef: <+input>
+          sources:
+            - spec:
+                connectorRef: account.dockerhub
+                imagePath: rssnyder/delegate
+                tag: 23.01.78101
+              identifier: delegate
+              type: DockerRegistry
+      variables:
+        - name: cpu
+          type: String
+          description: ""
+          value: "1024"
+        - name: memory
+          type: String
+          description: ""
+          value: "2048"
+        - name: delegate_name
+          type: String
+          description: ""
+          value: ecstest
+        - name: manager_host_and_port
+          type: String
+          description: ""
+          value: https://app.harness.io/gratis
+        - name: log_streaming_Service_url
+          type: String
+          description: ""
+          value: https://app.harness.io/gratis/log-service/
+        - name: role
+          type: String
+          description: ""
+          value: arn:aws:iam::759984737373:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS
+        - name: subnet
+          type: String
+          description: ""
+          value: subnet-0974d4940eab1ea9d
+        - name: security_group
+          type: String
+          description: ""
+          value: sg-0472e18c1a90179d9
+  gitOpsEnabled: false
+EOF
 }

@@ -6,3 +6,7 @@ terraform {
     }
   }
 }
+
+provider "harness" {
+  platform_api_key = var.token
+}
