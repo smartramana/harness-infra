@@ -82,6 +82,10 @@ featureFlags:
           onVariation: "true"
           offVariation: "false"
         state: "off"
+        targetRules:
+        - targets:
+          - identifier: customerID_X948
+          variation: "false"
       - identifier: stage
         default:
           onVariation: "true"
