@@ -21,6 +21,11 @@ featureFlags:
           onVariation: "true"
           offVariation: "false"
         state: "off"
+      - identifier: production
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
       - identifier: stage
         default:
           onVariation: "true"
@@ -56,6 +61,11 @@ featureFlags:
             op: segmentMatch
             values:
             - realm_blue
+      - identifier: production
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
       - identifier: stage
         default:
           onVariation: "true"
@@ -86,6 +96,11 @@ featureFlags:
         - targets:
           - identifier: customerID_X948
           variation: "false"
+      - identifier: production
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
       - identifier: stage
         default:
           onVariation: "true"
@@ -108,6 +123,11 @@ featureFlags:
           value: https://github.com/rssnyder/test
       environments:
       - identifier: dev
+        default:
+          onVariation: alternate
+          offVariation: default
+        state: "off"
+      - identifier: production
         default:
           onVariation: alternate
           offVariation: default
@@ -140,6 +160,11 @@ featureFlags:
           onVariation: expert
           offVariation: default
         state: "on"
+      - identifier: production
+        default:
+          onVariation: expert
+          offVariation: default
+        state: "off"
       - identifier: stage
         default:
           onVariation: expert
@@ -199,6 +224,11 @@ featureFlags:
             op: segmentMatch
             values:
             - region_east
+      - identifier: production
+        default:
+          onVariation: fools
+          offVariation: default
+        state: "off"
       - identifier: stage
         default:
           onVariation: fools
@@ -225,6 +255,11 @@ featureFlags:
           onVariation: "true"
           offVariation: "false"
         state: "off"
+      - identifier: production
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
       - identifier: stage
         default:
           onVariation: "true"
@@ -247,6 +282,11 @@ featureFlags:
           value: "false"
       environments:
       - identifier: dev
+        default:
+          onVariation: "true"
+          offVariation: "false"
+        state: "off"
+      - identifier: production
         default:
           onVariation: "true"
           offVariation: "false"
