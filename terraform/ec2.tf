@@ -206,9 +206,9 @@ systemctl enable --now coder-cloud-redirect
 EOF
 
   tags = {
-    Name        = "riley_code_server"
-    owner       = "riley_snyder_harness_io"
-    ttl         = "-1"
+    Name  = "riley_code_server"
+    owner = "riley_snyder_harness_io"
+    # ttl         = "-1"
     will_delete = "soon"
   }
 
