@@ -22,6 +22,30 @@ resource "aws_iam_role_policy_attachment" "rileysnyderharnessio-assumed-Administ
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
+resource "aws_iam_policy" "rileysnyderharnessio-harness" {
+  name        = "rileysnyderharnessio-harness-access"
+  description = "Policy for harness delegate aws access"
+
+  policy = <<EOF
+{
+   "Version": "2012-10-17",
+   "Statement": [
+       {
+           "Sid": "ECRToken",
+           "Effect": "Allow",
+           "Action": "ecr:GetAuthorizationToken",
+           "Resource": "*"
+       }
+   ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "rileysnyderharnessio-assumed-harness" {
+  role       = aws_iam_role.rileysnyderharnessio-assumed.name
+  policy_arn = aws_iam_policy.rileysnyderharnessio-harness.arn
+}
+
 data "aws_iam_policy_document" "rileysnyderharnessio-assumed-again" {
   statement {
     actions = ["sts:AssumeRole"]

@@ -10,8 +10,8 @@ module "harness-ci-factory" {
   container_registry               = "registry.rileysnyder.dev"
   container_registry_type          = "docker"
   container_registry_connector_ref = "account.hurley"
-  kubernetes_connector_ref         = "account.sagcp"
-  kubernetes_namespace             = "riley"
+  kubernetes_connector_ref         = "account.zirawork"
+  kubernetes_namespace             = "harness-delegate-ng-work"
   max_build_concurrency            = 5
   enable_schedule                  = false
   schedule                         = "0 2 * * *"

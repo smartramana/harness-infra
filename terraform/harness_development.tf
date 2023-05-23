@@ -19,18 +19,18 @@ resource "harness_platform_usergroup" "approvers" {
   }
 }
 
-resource "harness_platform_connector_prometheus" "saprom" {
-  identifier         = "saprom"
-  name               = "sa-prom"
-  url                = "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090/"
-  delegate_selectors = ["riley-sa-gcp"]
-}
+# resource "harness_platform_connector_prometheus" "saprom" {
+#   identifier         = "saprom"
+#   name               = "sa-prom"
+#   url                = "http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090/"
+#   delegate_selectors = ["riley-sa-gcp"]
+# }
 
-resource "harness_platform_connector_artifactory" "harnessartifactory" {
-  identifier = "harnessartifactory"
-  name       = "harness-artifactory"
-  url        = "https://harness.jfrog.io/artifactory/"
-}
+# resource "harness_platform_connector_artifactory" "harnessartifactory" {
+#   identifier = "harnessartifactory"
+#   name       = "harness-artifactory"
+#   url        = "https://harness.jfrog.io/artifactory/"
+# }
 
 resource "harness_platform_environment" "development_dev" {
   identifier = "dev"

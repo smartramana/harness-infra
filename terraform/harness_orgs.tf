@@ -9,3 +9,10 @@ module "solution-architecture" {
 
   name = "solution-architecture"
 }
+
+module "solution-architecture-again" {
+  source = "git@github.com:harness-community/terraform-harness-structure.git//modules/organizations?ref=main"
+
+  name     = module.solution-architecture.details.name
+  existing = true
+}

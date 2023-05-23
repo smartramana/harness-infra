@@ -14,6 +14,76 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
+resource "aws_security_group" "instance" {
+  name        = "instance"
+  description = "Allow traffic for harness"
+  vpc_id      = data.aws_vpc.sa-lab.id
+
+  ingress {
+    description     = "vpc sg"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [data.aws_security_group.sa-lab-default.id]
+  }
+
+  ingress {
+    description = "vpc cidr"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [data.aws_vpc.sa-lab.cidr_block]
+  }
+
+  ingress {
+    description = "drone"
+    from_port   = 9079
+    to_port     = 9079
+    protocol    = "tcp"
+    cidr_blocks = [data.aws_vpc.sa-lab.cidr_block]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_security_group" "web" {
+  name        = "web"
+  description = "Allow traffic for websites"
+  vpc_id      = data.aws_vpc.sa-lab.id
+
+  ingress {
+    description      = "http"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "http"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
 resource "aws_iam_role" "instance" {
   name               = "riley_instance"
   assume_role_policy = <<EOF
@@ -77,8 +147,8 @@ resource "aws_iam_role_policy_attachment" "instance" {
   policy_arn = aws_iam_policy.instance.arn
 }
 
-resource "aws_iam_instance_profile" "minikube" {
-  name = "riley_instance"
+resource "aws_iam_instance_profile" "riley" {
+  name = "riley_instances"
   role = aws_iam_role.instance.id
 }
 
@@ -87,11 +157,11 @@ resource "aws_instance" "code_server" {
   instance_type = "t3.2xlarge"
   key_name      = "riley"
 
-  subnet_id                   = module.vpc.private_subnets[0]
+  subnet_id                   = data.aws_subnets.sa-lab-private.ids[0]
   associate_public_ip_address = false
   vpc_security_group_ids      = [aws_security_group.instance.id]
 
-  iam_instance_profile = aws_iam_instance_profile.minikube.id
+  iam_instance_profile = aws_iam_instance_profile.riley.id
 
   root_block_device {
     volume_size = "20"
@@ -136,7 +206,7 @@ systemctl enable --now coder-cloud-redirect
 EOF
 
   tags = {
-    Name        = "code_server"
+    Name        = "riley_code_server"
     owner       = "riley_snyder_harness_io"
     ttl         = "-1"
     will_delete = "soon"
