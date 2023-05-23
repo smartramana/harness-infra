@@ -8,5 +8,5 @@ terraform {
 }
 
 provider "harness" {
-  platform_api_key = var.token
+  # platform_api_key = var.token
 }
