@@ -56,6 +56,18 @@ pipeline:
                         - name: AWS_SESSION_TOKEN
                           value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
                           type: String
+                        - name: ARM_TENANT_ID
+                          value: b229b2bb-5f33-4d22-bce0-730f6474e906
+                          type: String
+                        - name: ARM_SUBSCRIPTION_ID
+                          value: e8389fc5-0cb8-44ab-947b-c6cf62552be0
+                          type: String
+                        - name: ARM_CLIENT_ID
+                          value: 78ff246f-45e4-4f96-95e8-6f8549435b26
+                          type: String
+                        - name: ARM_CLIENT_SECRET
+                          value: <+secrets.getValue("account.azure")>
+                          type: String
                       varFiles:
                         - varFile:
                             spec:
@@ -63,9 +75,9 @@ pipeline:
                             identifier: inputs
                             type: Inline
                       secretManagerRef: harnessSecretManager
+                      skipRefreshCommand: false
                     provisionerIdentifier: harnessascode
                   timeout: 10m
-                  failureStrategies: []
               - step:
                   type: Http
                   name: plan pr
