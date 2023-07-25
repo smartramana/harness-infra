@@ -1,3 +1,5 @@
+data "harness_current_account" "current" {}
+
 resource "harness_platform_connector_github" "Github" {
   identifier      = "Github"
   name            = "Github"

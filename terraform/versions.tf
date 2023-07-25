@@ -9,8 +9,8 @@ terraform {
       version = "=3.0.0"
     }
     harness = {
-      source  = "harness/harness"
-      version = "0.14.11"
+      source = "harness/harness"
+      # version = "~> 0.0.0"
     }
   }
 }
