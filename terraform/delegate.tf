@@ -82,7 +82,7 @@ EOF
 }
 
 module "delegate" {
-  source = "git::https://github.com/harness-community/terraform-aws-harness-delegate-ecs-fargate.git?ref=0.0.11"
+  source = "git::https://github.com/harness-community/terraform-aws-harness-delegate-ecs-fargate.git?ref=main"
   # source                    = "../../terraform-aws-harness-delegate-ecs-fargate"
   name                      = "ecs"
   harness_account_id        = "wlgELJ0TTre5aZhzpt8gVA"
