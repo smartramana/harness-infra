@@ -81,26 +81,26 @@ resource "aws_iam_policy" "delegate_aws_access" {
 EOF
 }
 
-data "http" "latest_delegate_tag" {
-  url = "https://app.harness.io/ng/api/delegate-setup/latest-supported-version?accountIdentifier=${data.harness_current_account.current.id}"
+# data "http" "latest_delegate_tag" {
+#   url = "https://app.harness.io/ng/api/delegate-setup/latest-supported-version?accountIdentifier=${data.harness_current_account.current.id}"
 
-  # Optional request headers
-  request_headers = {
-    x-api-key = var.harness_platform_api_key
-  }
-}
+#   # Optional request headers
+#   request_headers = {
+#     x-api-key = var.harness_platform_api_key
+#   }
+# }
 
-locals {
-  latest_delegate_tag = jsondecode(data.http.latest_delegate_tag.response_body).resource.latestSupportedVersion
-}
+# locals {
+#   latest_delegate_tag = jsondecode(data.http.latest_delegate_tag.response_body).resource.latestSupportedVersion
+# }
 
 module "delegate" {
   source = "git::https://github.com/harness-community/terraform-aws-harness-delegate-ecs-fargate.git?ref=main"
   # source                    = "../../terraform-aws-harness-delegate-ecs-fargate"
   name                      = "ecs"
   harness_account_id        = data.harness_current_account.current.id
-  delegate_image            = "rssnyder/delegate:${local.latest_delegate_tag}"
-  desired_count             = 2
+  delegate_image            = "rssnyder/delegate:latest"
+  desired_count             = 1
   delegate_token_secret_arn = "arn:aws:secretsmanager:us-west-2:759984737373:secret:riley/delegate-zBsttc"
   registry_secret_arn       = "arn:aws:secretsmanager:us-west-2:759984737373:secret:riley/dockerhub-UiTqT3"
   runner_config             = file("${path.module}/pool.yml")
