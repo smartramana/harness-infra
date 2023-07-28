@@ -1,11 +1,12 @@
-data "harness_current_account" "current" {}
+# data "harness_current_account" "current" {}
 
 resource "harness_platform_connector_github" "Github" {
-  identifier      = "Github"
-  name            = "Github"
-  url             = "https://github.com"
-  connection_type = "Account"
-  validation_repo = "rssnyder/test"
+  identifier          = "Github"
+  name                = "Github"
+  url                 = "https://github.com"
+  connection_type     = "Account"
+  validation_repo     = "rssnyder/test"
+  execute_on_delegate = false
 
   api_authentication {
     token_ref = "account.gh_pat"

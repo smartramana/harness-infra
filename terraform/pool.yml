@@ -15,38 +15,38 @@ instances:
       tags:
         owner: rileysnyderharnessio
         ttl: '-1'
-      ami: ami-08df94af6199f15b6
+      ami: ami-08541bb85074a743a
       size: t3.medium
       network:
         private_ip: true
         subnet_id: subnet-0974d4940eab1ea9d
         security_groups:
-        - sg-0c417e4aaded7ba28
+        - sg-067dde69b10d3c2c3
       # user_data: |
       #   echo "[USER] This is the user data from my pool config"
-  - name: windows
-    default: true
-    type: amazon
-    pool: 1
-    limit: 4
-    platform:
-      os: windows
-      arch: amd64
-    spec:
-      account:
-        region: us-west-2
-        availability_zone: us-west-2a
-      tags:
-        owner: rileysnyderharnessio
-        ttl: '-1'
-      hibernate: true
-      ami: ami-0437c3d8d31331cb5
-      size: t3.xlarge
-      network:
-        private_ip: true
-        subnet_id: subnet-0974d4940eab1ea9d
-        security_groups:
-        - sg-0c417e4aaded7ba28
+  # - name: windows
+  #   default: true
+  #   type: amazon
+  #   pool: 1
+  #   limit: 4
+  #   platform:
+  #     os: windows
+  #     arch: amd64
+  #   spec:
+  #     account:
+  #       region: us-west-2
+  #       availability_zone: us-west-2a
+  #     tags:
+  #       owner: rileysnyderharnessio
+  #       ttl: '-1'
+  #     hibernate: true
+  #     ami: ami-088d5094c0da312c0
+  #     size: t3.xlarge
+  #     network:
+  #       private_ip: true
+  #       subnet_id: subnet-0974d4940eab1ea9d
+  #       security_groups:
+  #       - sg-067dde69b10d3c2c3
       # user_data: |
       #   <powershell>
       #   echo "[DRONE] Initialization Starting"
