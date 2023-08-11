@@ -1,12 +1,13 @@
 # resource "harness_platform_service" "nginx" {
-#   identifier = "nginx"
-#   name       = "nginx"
+#   count      = 40
+#   identifier = "nginx_${count.index}"
+#   name       = "nginx_${count.index}"
 #   org_id     = data.harness_platform_organization.default.id
 #   project_id = harness_platform_project.development.id
 #   yaml       = <<EOF
 # service:
-#   name: nginx
-#   identifier: nginx
+#   name: nginx_${count.index}
+#   identifier: nginx_${count.index}
 #   tags: {}
 #   serviceDefinition:
 #     type: Kubernetes
