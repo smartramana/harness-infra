@@ -6,132 +6,87 @@ pipeline:
   tags: {}
   stages:
     - stage:
-        name: apply
-        identifier: apply
+        name: aws creds
+        identifier: aws_creds
+        template:
+          templateRef: account.generate_and_save_aws_keys
+          versionLabel: "1"
+          gitBranch: main
+    - stage:
+        name: tf
+        identifier: tf
         description: ""
-        type: Custom
+        type: IACM
         spec:
           execution:
             steps:
               - step:
-                  name: assume
-                  identifier: assume
-                  template:
-                    templateRef: account.aws_assume_sales_admin
-                    versionLabel: "1"
+                  type: IACMTerraformPlugin
+                  name: init
+                  identifier: init
+                  timeout: 5m
+                  spec:
+                    command: init
               - step:
-                  type: TerraformPlan
+                  type: Run
+                  name: tflint
+                  identifier: tflint
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: ghcr.io/terraform-linters/tflint
+                    shell: Sh
+                    command: tflint
+              - step:
+                  type: IACMTerraformPlugin
                   name: plan
-                  identifier: pla
+                  identifier: plan
+                  timeout: 5m
                   spec:
-                    configuration:
-                      command: Apply
-                      configFiles:
-                        store:
-                          type: Github
-                          spec:
-                            gitFetchType: Branch
-                            connectorRef: account.gitssh
-                            repoName: harness-infra
-                            branch: <+input>
-                            folderPath: foobar/
-                        moduleSource:
-                          useConnectorCredentials: true
-                      environmentVariables:
-                        - name: AWS_REGION
-                          value: us-west-2
-                          type: String
-                        - name: AWS_ACCESS_KEY_ID
-                          value: <+execution.steps.assume.output.outputVariables.AWS_ACCESS_KEY_ID>
-                          type: String
-                        - name: AWS_SECRET_ACCESS_KEY
-                          value: <+execution.steps.assume.output.outputVariables.AWS_SECRET_ACCESS_KEY>
-                          type: String
-                        - name: HARNESS_PLATFORM_API_KEY
-                          value: <+secrets.getValue("account.harness_api_token")>
-                          type: String
-                        - name: HARNESS_ACCOUNT_ID
-                          value: wlgELJ0TTre5aZhzpt8gVA
-                          type: String
-                        - name: AWS_SESSION_TOKEN
-                          value: <+execution.steps.assume.output.outputVariables.AWS_SESSION_TOKEN>
-                          type: String
-                        - name: ARM_TENANT_ID
-                          value: b229b2bb-5f33-4d22-bce0-730f6474e906
-                          type: String
-                        - name: ARM_SUBSCRIPTION_ID
-                          value: e8389fc5-0cb8-44ab-947b-c6cf62552be0
-                          type: String
-                        - name: ARM_CLIENT_ID
-                          value: 78ff246f-45e4-4f96-95e8-6f8549435b26
-                          type: String
-                        - name: ARM_CLIENT_SECRET
-                          value: <+secrets.getValue("account.azure")>
-                          type: String
-                      varFiles:
-                        - varFile:
-                            spec:
-                              content: vscode_password = "<+secret.getValue("vscode_password")>"
-                            identifier: inputs
-                            type: Inline
-                      secretManagerRef: harnessSecretManager
-                      exportTerraformHumanReadablePlan: true
-                      skipRefreshCommand: false
-                    provisionerIdentifier: harnessascode
-                  timeout: 10m
+                    command: plan
               - step:
-                  type: Http
-                  name: plan pr
-                  identifier: plan_pr
+                  type: Run
+                  name: checkov
+                  identifier: checkov
                   spec:
-                    url: https://api.github.com/repos/rssnyder/<+execution.steps.pla.spec.configuration.configFiles.store.spec.repoName>/issues/<+trigger.prNumber>/comments
-                    method: POST
-                    headers:
-                      - key: Accept
-                        value: application/vnd.github+json
-                      - key: Authorization
-                        value: Bearer <+secrets.getValue("account.gh_pat")>
-                      - key: X-GitHub-Api-Version
-                        value: "2022-11-28"
-                    outputVariables: []
-                    requestBody: "{\"body\":\"Terraform Plan Successful: <+pipeline.executionUrl>\"}"
-                  timeout: 10s
-                  when:
-                    stageStatus: Success
-                    condition: <+trigger.event> == "PR"
-                  failureStrategies: []
+                    connectorRef: account.harnessImage
+                    image: bridgecrew/checkov
+                    shell: Sh
+                    command: checkov -f <+pipeline.stages.tf.spec.execution.steps.plan.output.outputVariables.plan>
               - step:
-                  type: HarnessApproval
+                  type: Run
+                  name: tfsec
+                  identifier: tfsec
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: aquasec/tfsec
+                    shell: Sh
+                    command: tfsec --soft-fail .
+              - step:
+                  type: IACMApproval
                   name: approve
                   identifier: approve
-                  spec:
-                    approvalMessage: Please review the plan step output and approve based on the changes specified.
-                    includePipelineExecutionHistory: true
-                    approvers:
-                      userGroups:
-                        - _project_all_users
-                      minimumCount: 1
-                      disallowPipelineExecutor: false
-                    approverInputs: []
-                  timeout: 1d
+                  spec: {}
+                  timeout: 5m
                   when:
                     stageStatus: Success
-                    condition: <+pipeline.stages.apply.spec.execution.steps.pla.plan.detailedExitCode> != 0
-                  failureStrategies: []
+                    condition: <+trigger.event> != "PR"
               - step:
-                  type: TerraformApply
+                  type: IACMTerraformPlugin
                   name: apply
                   identifier: apply
+                  timeout: 5m
                   spec:
-                    configuration:
-                      type: InheritFromPlan
-                    provisionerIdentifier: harnessascode
-                  timeout: 10m
-                  failureStrategies: []
+                    command: apply
                   when:
                     stageStatus: Success
-                    condition: (<+pipeline.stages.apply.spec.execution.steps.pla.spec.configuration.configFiles.store.spec.branch> == "main") && (<+pipeline.stages.apply.spec.execution.steps.pla.plan.detailedExitCode> != 0)
+                    condition: <+trigger.event> != "PR"
+          workspace: <+input>
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
         tags: {}
-  storeType: INLINE
-  delegateSelectors:
-    - ecs
+        delegateSelectors:
+          - ecs
