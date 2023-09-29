@@ -8,7 +8,7 @@ resource "harness_platform_environment" "development" {
   identifier = "development"
   name       = "development"
   org_id     = data.harness_platform_organization.default.id
-  project_id = data.harness_platform_project.home_lab.id
+  project_id = harness_platform_project.home_lab.id
   type       = "PreProduction"
   yaml       = <<EOF
 environment:
@@ -18,7 +18,7 @@ environment:
   tags: {}
   type: PreProduction
   orgIdentifier: ${data.harness_platform_organization.default.id}
-  projectIdentifier: ${data.harness_platform_project.home_lab.id}
+  projectIdentifier: ${harness_platform_project.home_lab.id}
   variables: []
 EOF
 }
