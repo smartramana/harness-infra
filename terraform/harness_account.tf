@@ -129,7 +129,7 @@ infrastructureDefinition:
   type: KubernetesDirect
   spec:
     connectorRef: account._lab
-    namespace: <+service.name>
+    namespace: <+service.name.toLowerCase().replace("_", "-").replace(" ", "-")>
     releaseName: release-<+INFRA_KEY>
   allowSimultaneousDeployments: false
 EOF

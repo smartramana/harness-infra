@@ -4,14 +4,33 @@ resource "harness_platform_project" "home_lab" {
   org_id     = data.harness_platform_organization.default.id
 }
 
+resource "harness_platform_environment" "development" {
+  identifier = "development"
+  name       = "development"
+  org_id     = data.harness_platform_organization.default.id
+  project_id = data.harness_platform_project.home_lab.id
+  type       = "PreProduction"
+  yaml       = <<EOF
+environment:
+  name: development
+  identifier: development
+  description: ""
+  tags: {}
+  type: PreProduction
+  orgIdentifier: ${data.harness_platform_organization.default.id}
+  projectIdentifier: ${data.harness_platform_project.home_lab.id}
+  variables: []
+EOF
+}
+
 resource "harness_platform_service" "harness_ccm_k8s_auto" {
-  identifier = "harness_ccm_k8s_auto"
+  identifier = "harness ccm k8s auto"
   name       = "harness_ccm_k8s_auto"
   org_id     = data.harness_platform_organization.default.id
   project_id = harness_platform_project.home_lab.id
   yaml       = <<EOF
 service:
-  name: harness_ccm_k8s_auto
+  name: harness ccm k8s auto
   identifier: harness_ccm_k8s_auto
   serviceDefinition:
     type: Kubernetes
