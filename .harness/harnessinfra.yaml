@@ -1,0 +1,13 @@
+inputSet:
+  name: harness-infra
+  identifier: harnessinfra
+  orgIdentifier: default
+  projectIdentifier: Default_Project_1662659562703
+  pipeline:
+    identifier: harness_as_code
+    stages:
+      - stage:
+          identifier: tf
+          type: IACM
+          spec:
+            workspace: harnessinfra
