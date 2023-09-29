@@ -123,14 +123,14 @@ service:
               store:
                 type: Github
                 spec:
-                  connectorRef: account.${harness_platform_connector_github.Github.id}
+                  connectorRef: account.global
                   gitFetchType: Branch
                   paths:
-                    - ff-proxy.yaml
-                  repoName: rssnyder/test
+                    - deploy/ff-relay-proxy.yaml
+                  repoName: harness-community/feature-flag-relay-proxy
                   branch: master
               valuesPaths:
-                - ff-proxy-values.yaml
+                - deploy/values.yaml
               skipResourceVersioning: false
               enableDeclarativeRollback: false
       artifacts:
