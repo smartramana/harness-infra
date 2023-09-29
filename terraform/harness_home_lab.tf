@@ -24,8 +24,8 @@ EOF
 }
 
 resource "harness_platform_service" "harness_ccm_k8s_auto" {
-  identifier = "harness ccm k8s auto"
-  name       = "harness_ccm_k8s_auto"
+  identifier = "harness_ccm_k8s_auto"
+  name       = "harness ccm k8s auto"
   org_id     = data.harness_platform_organization.default.id
   project_id = harness_platform_project.home_lab.id
   yaml       = <<EOF
