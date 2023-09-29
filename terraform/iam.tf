@@ -5,7 +5,8 @@ data "aws_iam_policy_document" "rileysnyderharnessio-assumed" {
     principals {
       type = "AWS"
       identifiers = [
-        module.delegate.aws_iam_role_task
+        module.delegate.aws_iam_role_task,
+        "arn:aws:iam::759984737373:role/37032-tshain-cluster"
       ]
     }
   }

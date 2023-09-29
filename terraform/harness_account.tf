@@ -26,6 +26,8 @@ resource "harness_platform_connector_docker" "dockerhub" {
   type       = "DockerHub"
   url        = "https://index.docker.io/v2/"
 
+  execute_on_delegate = false
+
   credentials {
     username     = "rssnyder"
     password_ref = "account.dockerhub"
@@ -93,4 +95,42 @@ resource "harness_platform_connector_github" "temp" {
       token_ref = "account.gh_pat"
     }
   }
+}
+
+resource "harness_platform_environment" "local" {
+  identifier = "local"
+  name       = "local"
+  type       = "PreProduction"
+  yaml       = <<EOF
+environment:
+  name: local
+  identifier: local
+  description: ""
+  tags: {}
+  type: PreProduction
+  variables: []
+EOF
+}
+
+resource "harness_platform_infrastructure" "local_lab" {
+  identifier      = "lab"
+  name            = "lab"
+  env_id          = harness_platform_environment.local.id
+  type            = "KubernetesDirect"
+  deployment_type = "Kubernetes"
+  yaml            = <<EOF
+infrastructureDefinition:
+  name: lab
+  identifier: lab
+  description: ""
+  tags: {}
+  environmentRef: ${harness_platform_environment.local.id}
+  deploymentType: Kubernetes
+  type: KubernetesDirect
+  spec:
+    connectorRef: account._lab
+    namespace: <+service.name>
+    releaseName: release-<+INFRA_KEY>
+  allowSimultaneousDeployments: false
+EOF
 }

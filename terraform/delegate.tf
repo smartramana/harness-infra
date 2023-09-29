@@ -103,15 +103,15 @@ module "delegate" {
   desired_count             = 1
   delegate_token_secret_arn = "arn:aws:secretsmanager:us-west-2:759984737373:secret:riley/delegate-zBsttc"
   registry_secret_arn       = "arn:aws:secretsmanager:us-west-2:759984737373:secret:riley/dockerhub-UiTqT3"
-  runner_config             = file("${path.module}/pool.yml")
+  # runner_config             = file("${path.module}/pool.yml")
   # init_script               = "curl -o- -L https://slss.io/install | bash && mv /opt/harness-delegate/.serverless/bin/serverless /usr/local/bin/"
-  delegate_environment = [
-    {
-      name  = "RUNNER_URL",
-      value = "https://ip-10-0-1-35.us-west-2.compute.internal:3000"
-    }
-  ]
-  delegate_tags = "linux-amd64"
+  # delegate_environment = [
+  #   {
+  #     name  = "RUNNER_URL",
+  #     value = "https://ip-10-0-1-35.us-west-2.compute.internal:3000"
+  #   }
+  # ]
+  # delegate_tags = "linux-amd64"
   delegate_policy_arns = [
     aws_iam_policy.delegate_aws_access.arn,
     "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
