@@ -68,6 +68,12 @@ service:
 EOF
 }
 
+resource "harness_platform_connector_helm" "longhorn" {
+  identifier = "longhorn"
+  name       = "longhorn"
+  url        = "https://charts.longhorn.io"
+}
+
 resource "harness_platform_service" "longhorn" {
   identifier = "longhorn"
   name       = "longhorn"
