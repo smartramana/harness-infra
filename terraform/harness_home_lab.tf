@@ -68,45 +68,6 @@ service:
 EOF
 }
 
-resource "harness_platform_connector_helm" "longhorn" {
-  identifier = "longhorn"
-  name       = "longhorn"
-  url        = "https://charts.longhorn.io"
-}
-
-resource "harness_platform_service" "longhorn" {
-  identifier = "longhorn"
-  name       = "longhorn"
-  org_id     = data.harness_platform_organization.default.id
-  project_id = harness_platform_project.home_lab.id
-  yaml       = <<EOF
-service:
-  name: longhorn
-  identifier: longhorn
-  orgIdentifier: default
-  projectIdentifier: Default_Project_1662659562703
-  serviceDefinition:
-    spec:
-      manifests:
-        - manifest:
-            identifier: main
-            type: K8sManifest
-            spec:
-              store:
-                type: Github
-                spec:
-                  connectorRef: account.${harness_platform_connector_github.Github.id}
-                  gitFetchType: Branch
-                  paths:
-                    - deploy/longhorn.yaml
-                  repoName: longhorn/longhorn
-                  branch: v1.5.x
-              skipResourceVersioning: false
-              enableDeclarativeRollback: false
-    type: Kubernetes
-EOF
-}
-
 resource "harness_platform_service" "ff_relay_proxy" {
   identifier = "ff_relay_proxy"
   name       = "ff relay proxy"
@@ -133,7 +94,7 @@ service:
                   paths:
                     - deploy/ff-relay-proxy.yaml
                   repoName: harness-community/feature-flag-relay-proxy
-                  branch: master
+                  branch: main
               valuesPaths:
                 - deploy/values.yaml
               skipResourceVersioning: false
