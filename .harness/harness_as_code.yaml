@@ -90,3 +90,9 @@ pipeline:
         tags: {}
         delegateSelectors:
           - ecs
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.rssnyder
+        repoName: harness-infra
+        build: <+input>
