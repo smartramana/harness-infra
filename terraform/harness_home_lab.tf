@@ -104,7 +104,6 @@ service:
               skipResourceVersioning: false
               enableDeclarativeRollback: false
     type: Kubernetes
-
 EOF
 }
 
