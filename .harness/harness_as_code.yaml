@@ -74,7 +74,7 @@ pipeline:
                   when:
                     stageStatus: Success
                     condition: <+trigger.event> != "PR"
-          workspace: <+input>
+          workspace: harnessinfra
           platform:
             os: Linux
             arch: Amd64
