@@ -43,24 +43,25 @@ pipeline:
                   timeout: 5m
                   spec:
                     command: plan
-              - step:
-                  type: Run
-                  name: checkov
-                  identifier: checkov
-                  spec:
-                    connectorRef: account.harnessImage
-                    image: bridgecrew/checkov
-                    shell: Sh
-                    command: checkov -f <+pipeline.stages.tf.spec.execution.steps.plan.output.outputVariables.plan>
-              - step:
-                  type: Run
-                  name: tfsec
-                  identifier: tfsec
-                  spec:
-                    connectorRef: account.harnessImage
-                    image: aquasec/tfsec
-                    shell: Sh
-                    command: tfsec --soft-fail .
+              - parallel:
+                  - step:
+                      type: Run
+                      name: checkov
+                      identifier: checkov
+                      spec:
+                        connectorRef: account.harnessImage
+                        image: bridgecrew/checkov
+                        shell: Sh
+                        command: checkov -f <+pipeline.stages.tf.spec.execution.steps.plan.output.outputVariables.plan>
+                  - step:
+                      type: Run
+                      name: tfsec
+                      identifier: tfsec
+                      spec:
+                        connectorRef: account.harnessImage
+                        image: aquasec/tfsec
+                        shell: Sh
+                        command: tfsec --soft-fail .
               - step:
                   type: IACMApproval
                   name: approve
