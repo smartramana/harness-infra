@@ -4,70 +4,83 @@ pipeline:
   projectIdentifier: Azure
   orgIdentifier: default
   tags: {}
-  properties:
-    ci:
-      codebase:
-        connectorRef: github_1
-        build: <+input>
   stages:
     - stage:
-        name: har
-        identifier: har
+        name: tf
+        identifier: tf
         description: ""
-        type: CI
+        type: IACM
         spec:
-          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: IACMTerraformPlugin
+                  name: init
+                  identifier: init
+                  timeout: 5m
+                  spec:
+                    command: init
+              - step:
+                  type: Run
+                  name: tflint
+                  identifier: tflint
+                  spec:
+                    connectorRef: account.harnessImage
+                    image: ghcr.io/terraform-linters/tflint
+                    shell: Sh
+                    command: tflint
+              - step:
+                  type: IACMTerraformPlugin
+                  name: plan
+                  identifier: plan
+                  timeout: 5m
+                  spec:
+                    command: plan
+              - parallel:
+                  - step:
+                      type: Run
+                      name: checkov
+                      identifier: checkov
+                      spec:
+                        connectorRef: account.harnessImage
+                        image: bridgecrew/checkov
+                        shell: Sh
+                        command: checkov -f <+pipeline.stages.tf.spec.execution.steps.plan.output.outputVariables.plan>
+                  - step:
+                      type: Run
+                      name: tfsec
+                      identifier: tfsec
+                      spec:
+                        connectorRef: account.harnessImage
+                        image: aquasec/tfsec
+                        shell: Sh
+                        command: tfsec --soft-fail .
+              - step:
+                  type: IACMApproval
+                  name: approve
+                  identifier: approve
+                  spec: {}
+                  timeout: 5m
+                  when:
+                    stageStatus: Success
+                    condition: <+trigger.event> != "PR"
+              - step:
+                  type: IACMTerraformPlugin
+                  name: apply
+                  identifier: apply
+                  timeout: 5m
+                  spec:
+                    command: apply
+                  when:
+                    stageStatus: Success
+                    condition: <+trigger.event> != "PR"
+          workspace: harnessinfra
           platform:
             os: Linux
             arch: Amd64
           runtime:
             type: Cloud
             spec: {}
-          execution:
-            steps:
-              - step:
-                  type: GitClone
-                  name: GitClone_1
-                  identifier: GitClone_1
-                  spec:
-                    connectorRef: github_1
-                    build:
-                      type: branch
-                      spec:
-                        branch: main
-                  when:
-                    stageStatus: Success
-              - step:
-                  type: Run
-                  name: Run_1
-                  identifier: Run_1
-                  spec:
-                    shell: Sh
-                    command: ls -ltr
-    - stage:
-        name: dele
-        identifier: dele
-        description: ""
-        type: Custom
-        spec:
-          execution:
-            steps:
-              - step:
-                  type: ShellScript
-                  name: ShellScript_1
-                  identifier: ShellScript_1
-                  spec:
-                    shell: Bash
-                    onDelegate: true
-                    source:
-                      type: Inline
-                      spec:
-                        script: |-
-                          aws -verston
-                          echo aws sts get-caller-identity
-                    environmentVariables: []
-                    outputVariables: []
-                    delegateSelectors:
-                      - docker-delegate
-                  timeout: 10m
         tags: {}
+        delegateSelectors:
+          - ecs
