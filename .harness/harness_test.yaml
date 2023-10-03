@@ -26,9 +26,21 @@ pipeline:
           execution:
             steps:
               - step:
+                  type: GitClone
+                  name: GitClone_1
+                  identifier: GitClone_1
+                  spec:
+                    connectorRef: github_1
+                    build:
+                      type: branch
+                      spec:
+                        branch: main
+                  when:
+                    stageStatus: Success
+              - step:
                   type: Run
                   name: Run_1
                   identifier: Run_1
                   spec:
                     shell: Sh
-                    command: echo "$hostname"
+                    command: ls- ltr
