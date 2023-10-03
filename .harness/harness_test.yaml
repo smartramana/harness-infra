@@ -1,0 +1,34 @@
+pipeline:
+  name: harness_test
+  identifier: harness_test
+  projectIdentifier: Azure
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: github_1
+        build: <+input>
+  stages:
+    - stage:
+        name: har
+        identifier: har
+        description: ""
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Docker
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Run_1
+                  identifier: Run_1
+                  spec:
+                    shell: Sh
+                    command: echo "$hostname"
