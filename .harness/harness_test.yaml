@@ -44,3 +44,28 @@ pipeline:
                   spec:
                     shell: Sh
                     command: ls -ltr
+    - stage:
+        name: dele
+        identifier: dele
+        description: ""
+        type: Custom
+        spec:
+          execution:
+            steps:
+              - step:
+                  type: ShellScript
+                  name: ShellScript_1
+                  identifier: ShellScript_1
+                  spec:
+                    shell: Bash
+                    onDelegate: true
+                    source:
+                      type: Inline
+                      spec:
+                        script: echo aws sts get-caller-identity
+                    environmentVariables: []
+                    outputVariables: []
+                    delegateSelectors:
+                      - docker-delegate
+                  timeout: 10m
+        tags: {}
