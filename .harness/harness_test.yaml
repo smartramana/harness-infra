@@ -19,9 +19,9 @@ pipeline:
           cloneCodebase: true
           platform:
             os: Linux
-            arch: Arm64
+            arch: Amd64
           runtime:
-            type: Docker
+            type: Cloud
             spec: {}
           execution:
             steps:
