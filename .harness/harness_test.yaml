@@ -62,7 +62,9 @@ pipeline:
                     source:
                       type: Inline
                       spec:
-                        script: echo aws sts get-caller-identity
+                        script: |-
+                          aws -verston
+                          echo aws sts get-caller-identity
                     environmentVariables: []
                     outputVariables: []
                     delegateSelectors:
