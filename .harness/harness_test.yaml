@@ -43,4 +43,4 @@ pipeline:
                   identifier: Run_1
                   spec:
                     shell: Sh
-                    command: ls- ltr
+                    command: ls -ltr
